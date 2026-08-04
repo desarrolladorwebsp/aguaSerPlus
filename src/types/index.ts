@@ -9,6 +9,6 @@ export type ApiResponse<T> = {
   success: boolean;
 };
 
-export type { ProductOffer } from "./product";
+export type { ProductOffer, ProductTag } from "./product";
 export { formatClp, getDiscountPercent } from "./product";
 

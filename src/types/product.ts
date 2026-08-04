@@ -1,3 +1,8 @@
+export type ProductTag = {
+  label: string;
+  icon: "bolt" | "kettle" | "snowflake" | "table" | "metal" | "bottles" | "map" | "truck";
+};
+
 export type ProductOffer = {
   id: string;
   name: string;
@@ -5,9 +10,12 @@ export type ProductOffer = {
   priceBefore: number;
   priceNow: number;
   badge: string;
+  badgeTone: "green" | "blue" | "yellow";
   note?: string;
   image: string;
   tint: "blue" | "green" | "yellow";
+  tags: ProductTag[];
+  featured?: boolean;
 };
 
 /**
