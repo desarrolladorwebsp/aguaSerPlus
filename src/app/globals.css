@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
+/* ─── AguaSer — Azul principal + Verde eco + Amarillo energía ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --aguaser-brand: #0056a3;
+  --aguaser-brand-secondary: #0077c8;
+  --aguaser-brand-accent: #0099dd;
+  --aguaser-green: #1fa97a;
+  --aguaser-green-soft: #e6f7f0;
+  --aguaser-yellow: #f0b429;
+  --aguaser-yellow-soft: #fff6db;
+  --aguaser-neutral: #7a8794;
+  --aguaser-surface: #f4f8fb;
+  --aguaser-background: #ffffff;
+  --aguaser-foreground: #0c2d4a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-brand: var(--aguaser-brand);
+  --color-brand-secondary: var(--aguaser-brand-secondary);
+  --color-brand-accent: var(--aguaser-brand-accent);
+  --color-green: var(--aguaser-green);
+  --color-green-soft: var(--aguaser-green-soft);
+  --color-yellow: var(--aguaser-yellow);
+  --color-yellow-soft: var(--aguaser-yellow-soft);
+  --color-neutral: var(--aguaser-neutral);
+  --color-surface: var(--aguaser-surface);
+  --color-background: var(--aguaser-background);
+  --color-foreground: var(--aguaser-foreground);
+
+  --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
+
+  --shadow-soft: 0 18px 50px -24px rgb(0 86 163 / 0.28);
+  --shadow-lift: 0 22px 40px -20px rgb(12 45 74 / 0.18);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--aguaser-background);
+  color: var(--aguaser-foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
 }
