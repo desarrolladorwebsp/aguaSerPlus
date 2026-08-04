@@ -104,7 +104,7 @@ export default function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate overflow-hidden bg-[#f7fbff]"
+      className="relative isolate flex min-h-[calc(100dvh-4.5rem)] flex-col overflow-hidden bg-[#f7fbff]"
     >
       <div
         aria-hidden
@@ -118,11 +118,11 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 pt-10 pb-8 sm:px-6 lg:px-8 lg:pt-14 lg:pb-10">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-8">
+      <div className="relative mx-auto flex w-full flex-1 flex-col justify-center px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-12">
+        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-6 xl:gap-10">
           {/* Left copy */}
           <motion.div
-            className="lg:col-span-6"
+            className="w-full lg:col-span-5 xl:col-span-5"
             variants={stagger}
             initial={reduce ? false : "hidden"}
             animate="visible"
@@ -138,7 +138,7 @@ export default function Hero() {
             <motion.h1
               id="hero-heading"
               variants={fadeUp}
-              className="mt-5 max-w-[12ch] text-[2.6rem] font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.4rem]"
+              className="mt-5 w-full max-w-[16ch] text-[2.6rem] font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.4rem]"
             >
               Agua pura,{" "}
               <span className="text-brand">lista en tu puerta</span>
@@ -146,7 +146,7 @@ export default function Hero() {
 
             <motion.p
               variants={fadeUp}
-              className="mt-4 max-w-[38ch] text-[15px] leading-relaxed text-neutral sm:text-base"
+              className="mt-4 w-full max-w-[42ch] text-[15px] leading-relaxed text-neutral sm:text-base"
             >
               Bidones, dispensadores y el Club AguaSer. Saludable, económico y
               con despacho en Santiago.
@@ -232,16 +232,16 @@ export default function Hero() {
 
           {/* Right visual */}
           <motion.div
-            className="relative lg:col-span-6"
+            className="relative w-full lg:col-span-7 xl:col-span-7"
             initial={reduce ? false : { opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.75, delay: 0.12, ease }}
           >
-            <div className="relative mx-auto aspect-square max-w-[520px] lg:max-w-none">
+            <div className="relative mx-auto aspect-[5/4] w-full sm:aspect-[4/3] lg:aspect-[5/4] lg:min-h-[480px]">
               {/* Soft blue circle behind */}
               <div
                 aria-hidden
-                className="absolute top-[8%] left-1/2 size-[78%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgb(0_153_221_/_0.22)_0%,_rgb(0_119_200_/_0.08)_45%,_transparent_70%)]"
+                className="absolute top-[6%] left-1/2 size-[70%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgb(0_153_221_/_0.22)_0%,_rgb(0_119_200_/_0.08)_45%,_transparent_70%)]"
               />
 
               <motion.div
@@ -258,7 +258,7 @@ export default function Hero() {
                   alt="Bidón AguaSer 20 litros con agua fresca"
                   fill
                   priority
-                  sizes="(max-width: 1024px) 90vw, 48vw"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
                   className="object-contain object-center drop-shadow-[0_30px_50px_rgb(0_86_163_/_0.18)]"
                 />
               </motion.div>
@@ -268,7 +268,7 @@ export default function Hero() {
                 initial={reduce ? false : { opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.45, duration: 0.55, ease }}
-                className="absolute top-[6%] right-[2%] z-10 flex size-[7.5rem] flex-col items-center justify-center rounded-full bg-background text-center shadow-[0_16px_40px_-18px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10 sm:size-32 sm:right-[4%]"
+                className="absolute top-[4%] right-[4%] z-10 flex size-[7.5rem] flex-col items-center justify-center rounded-full bg-background text-center shadow-[0_16px_40px_-18px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10 sm:size-32 sm:right-[6%]"
               >
                 <Heart
                   className="mb-1 size-4 fill-brand text-brand sm:size-5"
@@ -288,7 +288,7 @@ export default function Hero() {
           initial={reduce ? false : { opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6, ease }}
-          className="mt-8 rounded-[1.75rem] bg-background p-5 shadow-[0_20px_50px_-28px_rgb(12_45_74_/_0.28)] ring-1 ring-brand/8 sm:mt-10 sm:p-6 lg:mt-4"
+          className="mt-8 w-full rounded-[1.75rem] bg-background p-5 shadow-[0_20px_50px_-28px_rgb(12_45_74_/_0.28)] ring-1 ring-brand/8 sm:mt-10 sm:p-6 lg:mt-8"
         >
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
             {valueProps.map(({ icon: Icon, title, description, iconClass }) => (

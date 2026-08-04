@@ -17,7 +17,7 @@ const navLinks = [
 export default function Header() {
   return (
     <header className="relative z-40 border-b border-brand/6 bg-background/90 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:h-[72px] sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-16 w-full items-center justify-between gap-4 px-4 sm:h-[72px] sm:px-6 lg:px-8 xl:px-12">
         <Link href="/" className="inline-flex items-center gap-2 shrink-0">
           <span className="flex size-9 items-center justify-center rounded-full bg-brand text-white">
             <Droplet className="size-5 fill-white" aria-hidden />
