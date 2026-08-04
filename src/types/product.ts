@@ -1,7 +1,21 @@
 export type ProductTag = {
   label: string;
-  icon: "bolt" | "kettle" | "snowflake" | "table" | "metal" | "bottles" | "map" | "truck";
+  icon:
+    | "bolt"
+    | "kettle"
+    | "snowflake"
+    | "table"
+    | "metal"
+    | "bottles"
+    | "map"
+    | "truck";
 };
+
+export type ProductCategory =
+  | "recargas"
+  | "dispensadores"
+  | "accesorios"
+  | "consumibles";
 
 export type ProductOffer = {
   id: string;
@@ -16,6 +30,8 @@ export type ProductOffer = {
   tint: "blue" | "green" | "yellow";
   tags: ProductTag[];
   featured?: boolean;
+  category: ProductCategory;
+  inStock?: boolean;
 };
 
 /**
@@ -29,3 +45,14 @@ export function getDiscountPercent(before: number, now: number): number {
   if (before <= 0) return 0;
   return Math.round(((before - now) / before) * 100);
 }
+
+export const PRODUCT_CATEGORIES: {
+  id: ProductCategory | "all";
+  label: string;
+}[] = [
+  { id: "all", label: "Todos" },
+  { id: "recargas", label: "Recargas y Bidones" },
+  { id: "dispensadores", label: "Dispensadores" },
+  { id: "accesorios", label: "Accesorios" },
+  { id: "consumibles", label: "Consumibles" },
+];

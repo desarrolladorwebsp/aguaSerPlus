@@ -1,19 +1,28 @@
+import Link from "next/link";
 import {
+  ArrowUpRight,
   Clock,
+  Droplets,
+  Leaf,
   Mail,
   MapPin,
   Phone,
+  Recycle,
 } from "lucide-react";
 import { company } from "@/lib/company";
 import BrandLogo from "@/components/shared/BrandLogo";
+import Container from "@/components/ui/Container";
 
 const navLinks = [
-  { href: "#bidones", label: "Bidones" },
-  { href: "#dispensadores", label: "Dispensadores" },
-  { href: "#club", label: "Club AguaSer" },
-  { href: "#recargas", label: "Recargas" },
-  { href: "#ofertas", label: "Ofertas" },
-  { href: "#nosotros", label: "Nosotros" },
+  { href: "/productos", label: "Productos" },
+  { href: "/#recargas", label: "Recargas" },
+  { href: "/#ofertas", label: "Ofertas" },
+] as const;
+
+const pillars = [
+  { icon: Droplets, label: "Salud" },
+  { icon: Leaf, label: "Economía" },
+  { icon: Recycle, label: "Reciclaje" },
 ] as const;
 
 function WhatsAppIcon({ className }: { className?: string }) {
@@ -33,62 +42,110 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-brand/10 bg-foreground text-white">
+    <footer className="relative overflow-hidden bg-[#071f33] text-white">
+      {/* Atmosphere */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-40"
+        className="pointer-events-none absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 50% 60% at 0% 100%, rgb(0 153 221 / 0.25), transparent 55%),
-            radial-gradient(ellipse 40% 50% at 100% 0%, rgb(31 169 122 / 0.18), transparent 50%)
+            radial-gradient(ellipse 55% 70% at 0% 100%, rgb(0 153 221 / 0.22), transparent 55%),
+            radial-gradient(ellipse 45% 55% at 100% 0%, rgb(31 169 122 / 0.16), transparent 50%),
+            linear-gradient(180deg, rgb(12 45 74 / 0.35) 0%, transparent 28%)
           `,
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent"
+      />
 
-      <div className="relative mx-auto w-full px-4 py-14 sm:px-6 lg:px-8 xl:px-12">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+      {/* CTA band */}
+      <div className="relative border-b border-white/8">
+        <Container className="flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between">
+          <div className="max-w-xl">
+            <p className="text-xs font-semibold tracking-[0.18em] text-brand-accent uppercase">
+              Pedido rápido
+            </p>
+            <p className="mt-1.5 text-xl font-extrabold tracking-tight sm:text-2xl">
+              ¿Necesitas agua hoy?
+            </p>
+            <p className="mt-1 text-sm text-white/65">
+              Cotiza o pide recargas y dispensadores por WhatsApp. Despacho en
+              Santiago.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href={company.whatsapp.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-12 items-center gap-2.5 rounded-2xl bg-green px-5 text-sm font-bold text-white shadow-[0_16px_32px_-16px_rgb(31_169_122_/_0.7)] transition hover:bg-[#189866]"
+            >
+              <WhatsAppIcon className="size-4" />
+              Pedir por WhatsApp
+            </a>
+            <Link
+              href="/productos"
+              className="inline-flex h-12 items-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Ver productos
+              <ArrowUpRight className="size-4" aria-hidden />
+            </Link>
+          </div>
+        </Container>
+      </div>
+
+      <Container className="relative py-12 lg:py-14">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10">
           {/* Brand */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-3">
               <BrandLogo size="lg" onDark />
               <div>
                 <p className="text-lg font-extrabold tracking-wide">
-                  {company.tradeName}
+                  Agua Ser{" "}
+                  <span className="font-semibold text-brand-accent">Plus</span>
                 </p>
-                <p className="text-xs text-white/55">
-                  Salud, Economía y Reciclaje
+                <p className="text-xs text-white/50">
+                  Agua pura para hogar y empresa
                 </p>
               </div>
             </div>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/70">
-              Agua pura para tu hogar y empresa. Bidones, dispensadores y Club
-              AguaSer con despacho en Santiago.
+
+            <p className="mt-5 max-w-sm text-sm leading-relaxed text-white/65">
+              Bidones, recargas y dispensadores con foco en calidad, precio justo
+              y reutilización. Atención cercana desde Maipú.
             </p>
-            <a
-              href={company.whatsapp.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-green px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#189866]"
-            >
-              <WhatsAppIcon className="size-4" />
-              WhatsApp Business
-            </a>
+
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {pillars.map(({ icon: Icon, label }) => (
+                <li
+                  key={label}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/80"
+                >
+                  <Icon className="size-3.5 text-brand-accent" aria-hidden />
+                  {label}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Navigation */}
+          {/* Nav */}
           <div className="lg:col-span-2">
-            <h2 className="text-sm font-bold tracking-wide text-yellow uppercase">
-              Navegación
+            <h2 className="text-[11px] font-bold tracking-[0.18em] text-white/40 uppercase">
+              Explorar
             </h2>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-4 space-y-1">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <a
+                  <Link
                     href={link.href}
-                    className="text-sm text-white/75 transition hover:text-white"
+                    className="group inline-flex items-center gap-1.5 py-1.5 text-sm font-medium text-white/75 transition hover:text-white"
                   >
+                    <span className="h-px w-0 bg-brand-accent transition-all group-hover:w-3" />
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -96,131 +153,134 @@ export default function Footer() {
 
           {/* Contact */}
           <div className="lg:col-span-3">
-            <h2 className="text-sm font-bold tracking-wide text-yellow uppercase">
+            <h2 className="text-[11px] font-bold tracking-[0.18em] text-white/40 uppercase">
               Contacto
             </h2>
-            <ul className="mt-4 space-y-3.5 text-sm">
+            <ul className="mt-4 space-y-2">
               <li>
                 <a
-                  href={company.phone.landlineHref}
-                  className="inline-flex items-start gap-2.5 text-white/80 transition hover:text-white"
+                  href={company.phone.mobileHref}
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-white/5"
                 >
-                  <Phone className="mt-0.5 size-4 shrink-0 text-brand-accent" aria-hidden />
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-green/15 text-green">
+                    <Phone className="size-4" aria-hidden />
+                  </span>
                   <span>
-                    <span className="block text-xs text-white/50">Fijo</span>
-                    {company.phone.landlineDisplay}
+                    <span className="block text-[11px] text-white/45">
+                      Ventas / celular
+                    </span>
+                    <span className="text-sm font-semibold text-white">
+                      {company.phone.mobileDisplay}
+                    </span>
                   </span>
                 </a>
               </li>
               <li>
                 <a
-                  href={company.phone.mobileHref}
-                  className="inline-flex items-start gap-2.5 text-white/80 transition hover:text-white"
+                  href={company.phone.landlineHref}
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-white/5"
                 >
-                  <Phone className="mt-0.5 size-4 shrink-0 text-green" aria-hidden />
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-accent/15 text-brand-accent">
+                    <Phone className="size-4" aria-hidden />
+                  </span>
                   <span>
-                    <span className="block text-xs text-white/50">
-                      Celular / ventas
+                    <span className="block text-[11px] text-white/45">Fijo</span>
+                    <span className="text-sm font-semibold text-white">
+                      {company.phone.landlineDisplay}
                     </span>
-                    {company.phone.mobileDisplay}
                   </span>
                 </a>
               </li>
               <li>
                 <a
                   href={`mailto:${company.email}`}
-                  className="inline-flex items-start gap-2.5 text-white/80 transition hover:text-white"
+                  className="flex items-center gap-3 rounded-xl px-2 py-2 transition hover:bg-white/5"
                 >
-                  <Mail className="mt-0.5 size-4 shrink-0 text-yellow" aria-hidden />
-                  <span>
-                    <span className="block text-xs text-white/50">Correo</span>
-                    {company.email}
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-yellow/15 text-yellow">
+                    <Mail className="size-4" aria-hidden />
                   </span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={company.whatsapp.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-start gap-2.5 text-white/80 transition hover:text-white"
-                >
-                  <WhatsAppIcon className="mt-0.5 size-4 shrink-0 text-green" />
                   <span>
-                    <span className="block text-xs text-white/50">WhatsApp</span>
-                    {company.phone.mobileDisplay}
+                    <span className="block text-[11px] text-white/45">Correo</span>
+                    <span className="text-sm font-semibold text-white">
+                      {company.email}
+                    </span>
                   </span>
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Location / hours */}
+          {/* Office */}
           <div className="lg:col-span-3">
-            <h2 className="text-sm font-bold tracking-wide text-yellow uppercase">
+            <h2 className="text-[11px] font-bold tracking-[0.18em] text-white/40 uppercase">
               Oficina
             </h2>
-            <ul className="mt-4 space-y-3.5 text-sm">
-              <li>
-                <a
-                  href={company.address.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-start gap-2.5 text-white/80 transition hover:text-white"
-                >
-                  <MapPin className="mt-0.5 size-4 shrink-0 text-brand-accent" aria-hidden />
-                  <span>
+            <div className="mt-4 space-y-4">
+              <a
+                href={company.address.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 transition hover:border-brand-accent/30 hover:bg-white/[0.07]"
+              >
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-brand-accent/15 text-brand-accent">
+                  <MapPin className="size-4" aria-hidden />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-white">
                     {company.address.street}
-                    <br />
+                  </span>
+                  <span className="mt-0.5 block text-sm text-white/55">
                     {company.address.commune}, {company.address.city}
                   </span>
-                </a>
-              </li>
-              <li className="inline-flex items-start gap-2.5 text-white/80">
-                <Clock className="mt-0.5 size-4 shrink-0 text-yellow" aria-hidden />
-                <span>
-                  <span className="block text-xs text-white/50">
-                    Atención presencial
+                  <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brand-accent transition group-hover:gap-1.5">
+                    Ver en mapa
+                    <ArrowUpRight className="size-3.5" aria-hidden />
                   </span>
-                  {company.hours.label}
-                  <br />
-                  {company.hours.display}
                 </span>
-              </li>
-              <li>
-                <a
-                  href={company.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-semibold text-brand-accent transition hover:text-white"
-                >
-                  {company.domain}
-                </a>
-              </li>
-            </ul>
+              </a>
+
+              <div className="flex items-start gap-3 px-1">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-yellow/15 text-yellow">
+                  <Clock className="size-4" aria-hidden />
+                </span>
+                <div>
+                  <p className="text-[11px] text-white/45">
+                    Atención presencial
+                  </p>
+                  <p className="text-sm font-semibold text-white">
+                    {company.hours.label}
+                  </p>
+                  <p className="text-sm text-white/60">
+                    {company.hours.display}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Legal / billing strip */}
-        <div className="mt-12 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 sm:px-6">
-          <p className="text-xs leading-relaxed text-white/55 sm:text-sm">
-            <span className="font-semibold text-white/80">Facturación:</span>{" "}
-            {company.legalName}
-            <span className="mx-2 text-white/25">|</span>
-            <span className="font-semibold text-white/80">RUT:</span>{" "}
-            {company.rut}
-          </p>
+        {/* Bottom bar */}
+        <div className="mt-12 flex flex-col gap-4 border-t border-white/10 pt-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-1.5">
+            <p className="text-xs text-white/45">
+              © {year} {company.tradeName}. Todos los derechos reservados.
+            </p>
+            <p className="max-w-2xl text-[11px] leading-relaxed text-white/35 sm:text-xs">
+              Facturación: {company.legalName}
+              <span className="mx-1.5 text-white/20">·</span>
+              RUT {company.rut}
+            </p>
+          </div>
+          <a
+            href={company.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-semibold text-brand-accent transition hover:text-white"
+          >
+            {company.domain}
+          </a>
         </div>
-
-        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-white/45">
-            © {year} {company.tradeName}. Todos los derechos reservados.
-          </p>
-          <p className="text-xs text-white/45">
-            Nombre comercial: {company.tradeName} · {company.domain}
-          </p>
-        </div>
-      </div>
+      </Container>
     </footer>
   );
 }

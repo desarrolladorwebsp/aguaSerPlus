@@ -10,6 +10,7 @@ import {
   Truck,
 } from "lucide-react";
 import { company } from "@/lib/company";
+import Container from "@/components/ui/Container";
 
 /**
  * Propuesta Hero v3 — Quiet Premium Commerce
@@ -36,9 +37,9 @@ const stagger: Variants = {
 };
 
 const categories = [
-  { href: "#recargas", label: "Recargas 20L" },
-  { href: "#dispensadores", label: "Dispensadores" },
-  { href: "#club", label: "Club AguaSer" },
+  { href: "/#recargas", label: "Recargas 20L" },
+  { href: "/productos", label: "Productos" },
+  { href: "/#ofertas", label: "Ofertas" },
 ] as const;
 
 const benefits = [
@@ -80,14 +81,14 @@ export default function Hero() {
         }}
       />
 
-      <div className="relative mx-auto w-full px-4 pt-10 pb-14 sm:px-6 lg:px-10 lg:pt-14 lg:pb-16 xl:px-14">
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+      <Container className="relative pt-10 pb-14 lg:pt-14 lg:pb-16">
+        <div className="flex w-full flex-col gap-10 lg:flex-row lg:items-center lg:gap-12 xl:gap-16">
           {/* LEFT — marca + mensaje + CTA */}
           <motion.div
             variants={stagger}
             initial={reduce ? false : "hidden"}
             animate="visible"
-            className="max-w-xl lg:max-w-none"
+            className="w-full min-w-0 max-w-xl lg:max-w-none lg:flex-1"
           >
             <motion.div
               variants={fadeUp}
@@ -106,7 +107,7 @@ export default function Hero() {
               </div>
               <div>
                 <p className="text-sm font-extrabold tracking-wide text-brand">
-                  Agua Ser Plus
+                  Agua Ser <span className="font-semibold text-brand-accent">Plus</span>
                 </p>
                 <p className="mt-0.5 text-xs font-medium text-neutral">
                   Salud · Economía · Reciclaje
@@ -186,7 +187,7 @@ export default function Hero() {
             initial={reduce ? false : { opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.15, ease }}
-            className="w-full"
+            className="w-full min-w-0 lg:flex-1"
           >
             <div className="rounded-[2rem] bg-gradient-to-b from-brand/[0.06] via-green/[0.04] to-yellow/[0.08] p-2 shadow-[0_30px_80px_-40px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10">
               <div className="relative overflow-hidden rounded-[1.6rem] bg-white">
@@ -262,7 +263,7 @@ export default function Hero() {
             </li>
           ))}
         </motion.ul>
-      </div>
+      </Container>
     </section>
   );
 }

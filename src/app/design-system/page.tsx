@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const palette = [
   {
     name: "brand",
@@ -159,12 +161,12 @@ export default function DesignSystemPage() {
             <span className="rounded-full bg-brand-secondary/15 px-3 py-1 text-xs font-medium text-brand-secondary">
               Badge · brand-secondary
             </span>
-            <a
+            <Link
               href="/"
               className="text-sm font-medium text-brand-accent underline-offset-4 hover:underline"
             >
               Volver al inicio
-            </a>
+            </Link>
           </div>
         </section>
       </div>

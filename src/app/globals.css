@@ -13,6 +13,7 @@
   --aguaser-surface: #f4f8fb;
   --aguaser-background: #ffffff;
   --aguaser-foreground: #0c2d4a;
+  --aguaser-page-max: 1400px;
 }
 
 @theme inline {
@@ -35,51 +36,82 @@
   --shadow-lift: 0 22px 40px -20px rgb(12 45 74 / 0.18);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+/*
+  Resets deben vivir en @layer base.
+  Si van sin layer, en Tailwind v4 anulan utilidades como mx-auto
+  y el contenido queda pegado a la izquierda (hueco solo a la derecha).
+*/
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-* {
-  margin: 0;
-}
+  * {
+    margin: 0;
+  }
 
-html {
-  -webkit-text-size-adjust: 100%;
-}
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
 
-body {
-  min-height: 100dvh;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  background-color: var(--aguaser-background);
-  color: var(--aguaser-foreground);
-  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-}
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
+  html,
+  body {
+    width: 100%;
+    max-width: 100%;
+  }
 
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
+  body {
+    min-height: 100dvh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--aguaser-background);
+    color: var(--aguaser-foreground);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    overflow-x: clip;
+  }
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--aguaser-brand-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
 }

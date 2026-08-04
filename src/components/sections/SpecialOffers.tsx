@@ -10,70 +10,10 @@ import {
   Droplet,
   Flame,
 } from "lucide-react";
+import Link from "next/link";
 import ProductCard from "@/components/ui/ProductCard";
-import type { ProductOffer } from "@/types/product";
-import { getDiscountPercent } from "@/types/product";
-
-const offers: ProductOffer[] = [
-  {
-    id: "dispensador-te-digital",
-    name: "Dispensador Digital de Té",
-    priceBefore: 100_000,
-    priceNow: 80_000,
-    badge: `-${getDiscountPercent(100_000, 80_000)}%`,
-    badgeTone: "green",
-    image: "/products/product-tea-dispenser.png",
-    tint: "green",
-    tags: [
-      { label: "Digital", icon: "bolt" },
-      { label: "Incluye tetera y hervidor", icon: "kettle" },
-    ],
-  },
-  {
-    id: "dispensador-sobremesa",
-    name: "Dispensador Sobremesa Frío y Caliente",
-    priceBefore: 50_000,
-    priceNow: 45_000,
-    badge: `-${getDiscountPercent(50_000, 45_000)}%`,
-    badgeTone: "blue",
-    image: "/products/product-countertop-dispenser.png",
-    tint: "blue",
-    tags: [
-      { label: "Frío y Caliente", icon: "snowflake" },
-      { label: "Sobremesa", icon: "table" },
-    ],
-  },
-  {
-    id: "rack-3-bidones",
-    name: "Rack para 3 Bidones 20 Litros",
-    priceBefore: 30_000,
-    priceNow: 18_000,
-    badge: `-${getDiscountPercent(30_000, 18_000)}%`,
-    badgeTone: "yellow",
-    image: "/products/product-rack-bidones.png",
-    tint: "yellow",
-    featured: true,
-    tags: [
-      { label: "Metal resistente", icon: "metal" },
-      { label: "3 bidones", icon: "bottles" },
-    ],
-  },
-  {
-    id: "hielo-2kg",
-    name: "Hielo 2 KG",
-    note: "Solo Maipú",
-    priceBefore: 1_500,
-    priceNow: 1_200,
-    badge: `-${getDiscountPercent(1_500, 1_200)}%`,
-    badgeTone: "blue",
-    image: "/products/product-ice-2kg.png",
-    tint: "blue",
-    tags: [
-      { label: "Solo Maipú", icon: "map" },
-      { label: "Entrega el mismo día", icon: "truck" },
-    ],
-  },
-];
+import { specialOfferProducts } from "@/lib/products";
+import Container from "@/components/ui/Container";
 
 export default function SpecialOffers() {
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -93,7 +33,7 @@ export default function SpecialOffers() {
     <section
       id="ofertas"
       aria-labelledby="offers-heading"
-      className="relative overflow-hidden bg-[#f3f8fd] py-16 sm:py-20"
+      className="relative scroll-mt-20 overflow-hidden bg-[#f3f8fd] py-16 sm:scroll-mt-24 sm:py-20"
     >
       {/* Soft atmosphere */}
       <div
@@ -119,7 +59,7 @@ export default function SpecialOffers() {
         fill="currentColor"
       />
 
-      <div className="relative mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-12">
+      <Container className="relative">
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -128,7 +68,7 @@ export default function SpecialOffers() {
           className="mb-10 flex w-full flex-col gap-5 sm:mb-12 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
-            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#ffe8c2] px-3 py-1 text-xs font-bold text-[#9a6200]">
+            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-yellow px-3 py-1 text-xs font-bold text-foreground">
               <Flame className="size-3.5" aria-hidden />
               Descuentos exclusivos
             </span>
@@ -161,13 +101,13 @@ export default function SpecialOffers() {
             >
               <ChevronRight className="size-5" aria-hidden />
             </button>
-            <a
-              href="#catalogo"
+            <Link
+              href="/productos"
               className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-background px-4 py-2.5 text-sm font-semibold text-brand transition hover:border-brand/40 hover:bg-brand/5"
             >
-              Ver todas las ofertas
+              Ver todos los productos
               <ArrowRight className="size-4" aria-hidden />
-            </a>
+            </Link>
           </div>
         </motion.div>
 
@@ -175,7 +115,7 @@ export default function SpecialOffers() {
           ref={scrollerRef}
           className="flex w-full snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
         >
-          {offers.map((product, index) => (
+          {specialOfferProducts.map((product, index) => (
             <div
               key={product.id}
               className="w-[min(100%,270px)] shrink-0 snap-start sm:w-[min(100%,290px)] md:w-full md:min-w-0 md:shrink"
@@ -189,7 +129,7 @@ export default function SpecialOffers() {
           <Clock className="size-3.5 shrink-0" aria-hidden />
           Ofertas válidas por tiempo limitado o hasta agotar stock.
         </p>
-      </div>
+      </Container>
     </section>
   );
 }
