@@ -141,7 +141,7 @@ export default function Hero() {
                 href={company.whatsapp.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-brand px-6 text-[15px] font-bold text-white shadow-[0_20px_44px_-18px_rgb(0_86_163_/_0.55)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-secondary active:scale-[0.98]"
+                className="group inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-green px-6 text-[15px] font-bold text-white shadow-[0_20px_44px_-18px_rgb(31_169_122_/_0.5)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#189866] active:scale-[0.98]"
               >
                 <WhatsAppIcon className="size-5" />
                 Pedir por WhatsApp
