@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AguaSer Plus | Agua pura a domicilio",
+  title: "Agua Ser Plus | Agua pura a domicilio",
   description:
-    "Agua purificada, dispensadores y Club AguaSer con despacho a domicilio en Santiago.",
+    "Agua purificada, dispensadores y Club AguaSer con despacho a domicilio en Santiago. La Farfana 1562, Maipú.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

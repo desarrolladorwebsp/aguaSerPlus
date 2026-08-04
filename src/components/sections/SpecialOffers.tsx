@@ -119,13 +119,13 @@ export default function SpecialOffers() {
         fill="currentColor"
       />
 
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto w-full px-4 sm:px-6 lg:px-8 xl:px-12">
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-          className="mb-10 flex flex-col gap-5 sm:mb-12 sm:flex-row sm:items-end sm:justify-between"
+          className="mb-10 flex w-full flex-col gap-5 sm:mb-12 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
             <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#ffe8c2] px-3 py-1 text-xs font-bold text-[#9a6200]">
@@ -173,12 +173,12 @@ export default function SpecialOffers() {
 
         <div
           ref={scrollerRef}
-          className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
+          className="flex w-full snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0 lg:grid-cols-4 [&::-webkit-scrollbar]:hidden"
         >
           {offers.map((product, index) => (
             <div
               key={product.id}
-              className="w-[min(100%,270px)] shrink-0 snap-start sm:w-[min(100%,290px)] md:w-auto md:shrink"
+              className="w-[min(100%,270px)] shrink-0 snap-start sm:w-[min(100%,290px)] md:w-full md:min-w-0 md:shrink"
             >
               <ProductCard product={product} index={index} />
             </div>

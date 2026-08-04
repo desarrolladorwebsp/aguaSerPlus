@@ -1,13 +1,17 @@
 import Header from "@/components/shared/Header";
+import Footer from "@/components/shared/Footer";
 import Hero from "@/components/sections/Hero";
 import SpecialOffers from "@/components/sections/SpecialOffers";
 
 export default function Home() {
   return (
-    <main>
+    <>
       <Header />
-      <Hero />
-      <SpecialOffers />
-    </main>
+      <main>
+        <Hero />
+        <SpecialOffers />
+      </main>
+      <Footer />
+    </>
   );
 }

@@ -17,8 +17,9 @@ import {
 } from "lucide-react";
 import type { ProductOffer, ProductTag } from "@/types/product";
 import { formatClp } from "@/types/product";
+import { company } from "@/lib/company";
 
-const WHATSAPP_BASE = "https://wa.me/56900000000";
+const WHATSAPP_BASE = `https://wa.me/${company.whatsapp.number}`;
 
 const tintStyles = {
   blue: "from-[#e8f4ff] via-[#f0f8ff] to-white",

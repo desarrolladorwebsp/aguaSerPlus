@@ -1,10 +1,8 @@
 "use client";
 
-import Link from "next/link";
-import { Droplet, User } from "lucide-react";
-
-const WHATSAPP_URL =
-  "https://wa.me/56900000000?text=Hola%20AguaSer%2C%20quiero%20pedir%20agua%20pura";
+import { User } from "lucide-react";
+import { company } from "@/lib/company";
+import BrandLogo from "@/components/shared/BrandLogo";
 
 const navLinks = [
   { href: "#bidones", label: "Bidones" },
@@ -18,14 +16,12 @@ export default function Header() {
   return (
     <header className="relative z-40 border-b border-brand/6 bg-background/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full items-center justify-between gap-4 px-4 sm:h-[72px] sm:px-6 lg:px-8 xl:px-12">
-        <Link href="/" className="inline-flex items-center gap-2 shrink-0">
-          <span className="flex size-9 items-center justify-center rounded-full bg-brand text-white">
-            <Droplet className="size-5 fill-white" aria-hidden />
+        <div className="flex items-center gap-2.5">
+          <BrandLogo size="sm" priority />
+          <span className="hidden text-base font-extrabold tracking-wide text-brand sm:inline">
+            Agua Ser <span className="font-semibold text-brand-accent">Plus</span>
           </span>
-          <span className="text-lg font-extrabold tracking-wide text-brand uppercase">
-            AguaSer
-          </span>
-        </Link>
+        </div>
 
         <nav
           aria-label="Principal"
@@ -44,7 +40,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-            href={WHATSAPP_URL}
+            href={company.whatsapp.href}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-3.5 py-2 text-sm font-semibold text-brand transition hover:bg-brand/10 sm:px-4"

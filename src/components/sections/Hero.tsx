@@ -4,97 +4,58 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import {
   ArrowRight,
-  Droplet,
-  Heart,
   Leaf,
-  Recycle,
+  MapPin,
   ShieldCheck,
-  Sparkles,
-  Star,
   Truck,
-  Users,
 } from "lucide-react";
+import { company } from "@/lib/company";
 
-const WHATSAPP_URL =
-  "https://wa.me/56900000000?text=Hola%20AguaSer%2C%20quiero%20pedir%20agua%20pura";
+/**
+ * Propuesta Hero v3 — Quiet Premium Commerce
+ * Soft Structuralism · VARIANCE 7 · MOTION 5 · DENSITY 2
+ * Menos UI chrome, más marca + producto + CTA.
+ */
 
 const ease = [0.32, 0.72, 0, 1] as const;
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 22 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease },
+    transition: { duration: 0.75, ease },
   },
 };
 
 const stagger: Variants = {
   hidden: {},
   visible: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.04 },
+    transition: { staggerChildren: 0.1, delayChildren: 0.06 },
   },
 };
 
-const features = [
+const categories = [
+  { href: "#recargas", label: "Recargas 20L" },
+  { href: "#dispensadores", label: "Dispensadores" },
+  { href: "#club", label: "Club AguaSer" },
+] as const;
+
+const benefits = [
   {
     icon: ShieldCheck,
-    title: "Calidad certificada",
-    description: "Agua controlada",
-  },
-  {
-    icon: Recycle,
-    title: "Reciclable",
-    description: "Bidones reutilizables",
+    title: "Agua controlada",
+    text: "Purificación con estándar de calidad.",
   },
   {
     icon: Truck,
-    title: "Despacho rápido",
-    description: "En Santiago",
-  },
-  {
-    icon: Users,
-    title: "Club AguaSer",
-    description: "Más beneficios",
-  },
-] as const;
-
-const quickOptions = [
-  {
-    href: "#recargas",
-    label: "Recargas 20L",
-    className: "bg-brand/10 text-brand ring-brand/15 hover:bg-brand/15",
-  },
-  {
-    href: "#dispensadores",
-    label: "Dispensadores",
-    className: "bg-green-soft text-green ring-green/20 hover:bg-green/15",
-  },
-  {
-    href: "#club",
-    label: "Club AguaSer",
-    className: "bg-yellow-soft text-foreground ring-yellow/35 hover:bg-yellow/35",
-  },
-] as const;
-
-const valueProps = [
-  {
-    icon: ShieldCheck,
-    title: "Segura para tu familia",
-    description: "Purificación confiable para el día a día.",
-    iconClass: "bg-brand/10 text-brand",
+    title: "Despacho en Santiago",
+    text: "Entrega a domicilio, rápida y simple.",
   },
   {
     icon: Leaf,
-    title: "Amigable con el planeta",
-    description: "Menos plástico descartable, más reuso.",
-    iconClass: "bg-green-soft text-green",
-  },
-  {
-    icon: Star,
-    title: "Ahorra más",
-    description: "Mejores precios con el Club AguaSer.",
-    iconClass: "bg-yellow-soft text-yellow",
+    title: "Más sostenible",
+    text: "Bidones retornables y reutilizables.",
   },
 ] as const;
 
@@ -104,212 +65,203 @@ export default function Hero() {
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate flex min-h-[calc(100dvh-4.5rem)] flex-col overflow-hidden bg-[#f7fbff]"
+      className="relative isolate overflow-hidden bg-white"
     >
+      {/* Soft brand wash */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background: `
-            radial-gradient(ellipse 55% 50% at 85% 35%, rgb(0 153 221 / 0.16), transparent 60%),
-            radial-gradient(ellipse 40% 35% at 10% 80%, rgb(31 169 122 / 0.08), transparent 55%),
-            linear-gradient(180deg, #f7fbff 0%, #ffffff 70%)
+            radial-gradient(ellipse 70% 55% at 100% 0%, rgb(0 153 221 / 0.12), transparent 55%),
+            radial-gradient(ellipse 45% 40% at 0% 100%, rgb(31 169 122 / 0.08), transparent 50%),
+            linear-gradient(180deg, #f5faff 0%, #ffffff 48%, #ffffff 100%)
           `,
         }}
       />
 
-      <div className="relative mx-auto flex w-full flex-1 flex-col justify-center px-4 py-10 sm:px-6 lg:px-8 lg:py-12 xl:px-12">
-        <div className="grid w-full grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-6 xl:gap-10">
-          {/* Left copy */}
+      <div className="relative mx-auto w-full px-4 pt-10 pb-14 sm:px-6 lg:px-10 lg:pt-14 lg:pb-16 xl:px-14">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+          {/* LEFT — marca + mensaje + CTA */}
           <motion.div
-            className="w-full lg:col-span-5 xl:col-span-5"
             variants={stagger}
             initial={reduce ? false : "hidden"}
             animate="visible"
+            className="max-w-xl lg:max-w-none"
           >
-            <motion.span
+            <motion.div
               variants={fadeUp}
-              className="inline-flex items-center gap-1.5 rounded-full bg-brand/10 px-3 py-1.5 text-[11px] font-bold tracking-[0.14em] text-brand uppercase"
+              className="flex items-center gap-4"
             >
-              <Droplet className="size-3.5 fill-brand" aria-hidden />
-              Agua purificada
-            </motion.span>
+              <div className="relative size-[4.5rem] overflow-hidden rounded-full bg-white shadow-[0_16px_40px_-20px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10 sm:size-20">
+                <Image
+                  src={company.logo.src}
+                  alt={company.logo.alt}
+                  width={company.logo.width}
+                  height={company.logo.height}
+                  priority
+                  className="h-full w-full object-contain p-1"
+                  sizes="80px"
+                />
+              </div>
+              <div>
+                <p className="text-sm font-extrabold tracking-wide text-brand">
+                  Agua Ser Plus
+                </p>
+                <p className="mt-0.5 text-xs font-medium text-neutral">
+                  Salud · Economía · Reciclaje
+                </p>
+              </div>
+            </motion.div>
 
             <motion.h1
               id="hero-heading"
               variants={fadeUp}
-              className="mt-5 w-full max-w-[16ch] text-[2.6rem] font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl lg:text-[3.4rem]"
+              className="mt-8 text-[2.8rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl lg:text-[3.5rem] xl:text-[3.75rem]"
             >
-              Agua pura,{" "}
-              <span className="text-brand">lista en tu puerta</span>
+              El agua más pura,
+              <span className="mt-1 block text-brand">
+                directo a tu puerta.
+              </span>
             </motion.h1>
 
             <motion.p
               variants={fadeUp}
-              className="mt-4 w-full max-w-[42ch] text-[15px] leading-relaxed text-neutral sm:text-base"
+              className="mt-5 max-w-[36ch] text-[1.05rem] leading-relaxed text-neutral"
             >
-              Bidones, dispensadores y el Club AguaSer. Saludable, económico y
-              con despacho en Santiago.
+              Bidones, dispensadores y suscripciones para hogar y empresa en
+              Santiago.
             </motion.p>
 
-            {/* Feature boxes 2x2 / 4 col */}
-            <motion.ul
-              variants={fadeUp}
-              className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4"
-            >
-              {features.map(({ icon: Icon, title, description }) => (
-                <li
-                  key={title}
-                  className="rounded-2xl bg-background px-3 py-3.5 shadow-[0_8px_24px_-16px_rgb(0_86_163_/_0.35)] ring-1 ring-brand/8"
-                >
-                  <Icon
-                    className="size-5 text-brand"
-                    strokeWidth={1.75}
-                    aria-hidden
-                  />
-                  <p className="mt-2 text-xs font-bold leading-snug text-foreground sm:text-[13px]">
-                    {title}
-                  </p>
-                  <p className="mt-0.5 text-[11px] leading-snug text-neutral">
-                    {description}
-                  </p>
-                </li>
-              ))}
-            </motion.ul>
-
-            {/* CTAs */}
             <motion.div
               variants={fadeUp}
-              className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center"
+              className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
             >
               <a
-                href={WHATSAPP_URL}
+                href={company.whatsapp.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex h-12 items-center justify-center gap-2.5 rounded-full bg-brand px-6 text-sm font-bold text-white shadow-[0_14px_32px_-12px_rgb(0_86_163_/_0.55)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-secondary active:scale-[0.98]"
+                className="group inline-flex h-14 items-center justify-center gap-3 rounded-2xl bg-brand px-6 text-[15px] font-bold text-white shadow-[0_20px_44px_-18px_rgb(0_86_163_/_0.55)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-brand-secondary active:scale-[0.98]"
               >
                 <WhatsAppIcon className="size-5" />
                 Pedir por WhatsApp
-                <ArrowRight
-                  className="size-4 transition group-hover:translate-x-0.5"
-                  aria-hidden
-                />
+                <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 transition group-hover:translate-x-0.5">
+                  <ArrowRight className="size-4" aria-hidden />
+                </span>
               </a>
 
               <a
                 href="#ofertas"
-                className="group inline-flex h-12 items-center justify-center gap-2 rounded-full border border-brand/20 bg-background px-6 text-sm font-bold text-brand transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:border-brand/40 hover:bg-brand/5 active:scale-[0.98]"
+                className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-white px-6 text-[15px] font-bold text-brand ring-1 ring-brand/15 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-surface hover:ring-brand/30 active:scale-[0.98]"
               >
                 Ver ofertas
-                <ArrowRight
-                  className="size-4 transition group-hover:translate-x-0.5"
-                  aria-hidden
-                />
+                <ArrowRight className="size-4 opacity-70" aria-hidden />
               </a>
             </motion.div>
 
-            {/* Quick options */}
-            <motion.div variants={fadeUp} className="mt-6">
-              <p className="text-sm text-neutral">
-                O elige una opción rápida:
-              </p>
-              <div className="mt-2.5 flex flex-wrap gap-2">
-                {quickOptions.map((option) => (
+            <motion.div
+              variants={fadeUp}
+              className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-brand/10 pt-6"
+            >
+              <span className="inline-flex items-center gap-1.5 text-sm text-neutral">
+                <MapPin className="size-4 text-brand" aria-hidden />
+                Maipú · Santiago
+              </span>
+              <nav aria-label="Accesos rápidos" className="flex flex-wrap gap-x-4 gap-y-1">
+                {categories.map((item) => (
                   <a
-                    key={option.label}
-                    href={option.href}
-                    className={`inline-flex items-center rounded-full px-3.5 py-2 text-xs font-bold ring-1 transition ${option.className}`}
+                    key={item.href}
+                    href={item.href}
+                    className="text-sm font-semibold text-brand underline-offset-4 transition hover:underline"
                   >
-                    {option.label === "Club AguaSer" ? (
-                      <Sparkles className="mr-1.5 size-3.5" aria-hidden />
-                    ) : null}
-                    {option.label}
+                    {item.label}
                   </a>
                 ))}
-              </div>
+              </nav>
             </motion.div>
           </motion.div>
 
-          {/* Right visual */}
+          {/* RIGHT — producto en escenario premium */}
           <motion.div
-            className="relative w-full lg:col-span-7 xl:col-span-7"
-            initial={reduce ? false : { opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.75, delay: 0.12, ease }}
+            initial={reduce ? false : { opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, delay: 0.15, ease }}
+            className="w-full"
           >
-            <div className="relative mx-auto aspect-[5/4] w-full sm:aspect-[4/3] lg:aspect-[5/4] lg:min-h-[480px]">
-              {/* Soft blue circle behind */}
-              <div
-                aria-hidden
-                className="absolute top-[6%] left-1/2 size-[70%] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,_rgb(0_153_221_/_0.22)_0%,_rgb(0_119_200_/_0.08)_45%,_transparent_70%)]"
-              />
+            <div className="rounded-[2rem] bg-gradient-to-b from-brand/[0.06] via-green/[0.04] to-yellow/[0.08] p-2 shadow-[0_30px_80px_-40px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10">
+              <div className="relative overflow-hidden rounded-[1.6rem] bg-white">
+                <div className="relative aspect-[4/5] sm:aspect-square lg:aspect-[5/4]">
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,_rgb(0_153_221_/_0.16),_transparent_58%)]"
+                  />
 
-              <motion.div
-                className="absolute inset-0"
-                animate={reduce ? undefined : { y: [0, -8, 0] }}
-                transition={{
-                  duration: 5.5,
-                  repeat: Infinity,
-                  ease: "easeInOut",
-                }}
-              >
-                <Image
-                  src="/products/hero-jug-splash.png"
-                  alt="Bidón AguaSer 20 litros con agua fresca"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className="object-contain object-center drop-shadow-[0_30px_50px_rgb(0_86_163_/_0.18)]"
-                />
-              </motion.div>
+                  <motion.div
+                    className="absolute inset-0"
+                    animate={reduce ? undefined : { y: [0, -8, 0] }}
+                    transition={{
+                      duration: 6,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <Image
+                      src="/products/hero-jug-splash.png"
+                      alt="Bidón Agua Ser Plus 20 litros"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-contain object-center p-4 sm:p-8"
+                    />
+                  </motion.div>
+                </div>
 
-              {/* Circular badge - hydration */}
-              <motion.aside
-                initial={reduce ? false : { opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.45, duration: 0.55, ease }}
-                className="absolute top-[4%] right-[4%] z-10 flex size-[7.5rem] flex-col items-center justify-center rounded-full bg-background text-center shadow-[0_16px_40px_-18px_rgb(0_86_163_/_0.45)] ring-1 ring-brand/10 sm:size-32 sm:right-[6%]"
-              >
-                <Heart
-                  className="mb-1 size-4 fill-brand text-brand sm:size-5"
-                  aria-hidden
-                />
-                <p className="px-3 text-[10px] leading-tight font-bold tracking-wide text-brand uppercase sm:text-[11px]">
-                  Hidratación que te hace{" "}
-                  <span className="text-brand-accent">bien</span>
-                </p>
-              </motion.aside>
+                {/* Info bajo la imagen — sin overlays encima */}
+                <div className="flex items-center justify-between gap-4 border-t border-brand/8 px-5 py-4 sm:px-6">
+                  <div>
+                    <p className="text-xs font-semibold tracking-wide text-green uppercase">
+                      Producto estrella
+                    </p>
+                    <p className="mt-0.5 text-lg font-extrabold text-foreground">
+                      Bidón 20L Agua Ser Plus
+                    </p>
+                  </div>
+                  <a
+                    href={company.whatsapp.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brand-secondary"
+                  >
+                    Pedir
+                    <ArrowRight className="size-4" aria-hidden />
+                  </a>
+                </div>
+              </div>
             </div>
           </motion.div>
         </div>
 
-        {/* Value proposition bar */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 20 }}
+        {/* Benefits — una sola fila limpia */}
+        <motion.ul
+          initial={reduce ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.6, ease }}
-          className="mt-8 w-full rounded-[1.75rem] bg-background p-5 shadow-[0_20px_50px_-28px_rgb(12_45_74_/_0.28)] ring-1 ring-brand/8 sm:mt-10 sm:p-6 lg:mt-8"
+          className="mt-12 grid grid-cols-1 gap-6 border-t border-brand/10 pt-8 sm:grid-cols-3 sm:gap-8"
         >
-          <ul className="grid grid-cols-1 gap-5 sm:grid-cols-3 sm:gap-6">
-            {valueProps.map(({ icon: Icon, title, description, iconClass }) => (
-              <li key={title} className="flex items-start gap-3.5">
-                <span
-                  className={`flex size-11 shrink-0 items-center justify-center rounded-2xl ${iconClass}`}
-                >
-                  <Icon className="size-5" strokeWidth={1.75} aria-hidden />
-                </span>
-                <div>
-                  <p className="text-sm font-bold text-foreground sm:text-[15px]">
-                    {title}
-                  </p>
-                  <p className="mt-0.5 text-xs leading-relaxed text-neutral sm:text-sm">
-                    {description}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
+          {benefits.map(({ icon: Icon, title, text }) => (
+            <li key={title} className="flex gap-3">
+              <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand/8 text-brand">
+                <Icon className="size-5" strokeWidth={1.6} aria-hidden />
+              </span>
+              <div>
+                <p className="text-sm font-bold text-foreground">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-neutral">
+                  {text}
+                </p>
+              </div>
+            </li>
+          ))}
+        </motion.ul>
       </div>
     </section>
   );
