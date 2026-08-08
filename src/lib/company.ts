@@ -18,6 +18,8 @@ export const company = {
     full: "La Farfana 1562, Maipú, Santiago",
     mapsUrl:
       "https://www.google.com/maps/search/?api=1&query=La+Farfana+1562+Maipu",
+    mapsEmbedUrl:
+      "https://maps.google.com/maps?q=La+Farfana+1562,+Maip%C3%BA,+Santiago,+Chile&z=16&output=embed",
   },
   hours: {
     label: "Lunes a viernes",

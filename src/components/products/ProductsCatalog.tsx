@@ -21,6 +21,9 @@ import {
 
 type SortOption = "relevance" | "price-asc" | "price-desc" | "name";
 
+/** 12 productos por página: 4 filas en grid de 3 columnas (rápido y limpio). */
+const PAGE_SIZE = 12;
+
 const sortOptions: { id: SortOption; label: string }[] = [
   { id: "relevance", label: "Relevancia" },
   { id: "price-asc", label: "Precio: menor a mayor" },
@@ -33,14 +36,21 @@ export default function ProductsCatalog() {
   const [category, setCategory] = useState<ProductCategory | "all">("all");
   const [onlyOffers, setOnlyOffers] = useState(false);
   const [onlyStock, setOnlyStock] = useState(true);
-  const [maxPrice, setMaxPrice] = useState(() =>
-    Math.max(...catalogProducts.map((p) => p.priceNow)),
-  );
+  const [maxPrice, setMaxPrice] = useState(() => {
+    const prices = catalogProducts
+      .map((p) => p.priceNow)
+      .filter((p) => p > 0);
+    return prices.length > 0 ? Math.max(...prices) : 0;
+  });
   const [sort, setSort] = useState<SortOption>("relevance");
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [page, setPage] = useState(1);
 
   const priceBounds = useMemo(() => {
-    const prices = catalogProducts.map((p) => p.priceNow);
+    const prices = catalogProducts
+      .map((p) => p.priceNow)
+      .filter((p) => p > 0);
+    if (prices.length === 0) return { min: 0, max: 0 };
     return {
       min: Math.min(...prices),
       max: Math.max(...prices),
@@ -93,6 +103,22 @@ export default function ProductsCatalog() {
     return list;
   }, [query, category, onlyOffers, onlyStock, maxPrice, sort]);
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const pageItems = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filtered.slice(start, start + PAGE_SIZE);
+  }, [filtered, currentPage]);
+
+  const goToPage = (next: number) => {
+    setPage(next);
+    if (typeof window !== "undefined") {
+      document
+        .getElementById("catalogo-resultados")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   const activeFiltersCount =
     (category !== "all" ? 1 : 0) +
     (onlyOffers ? 1 : 0) +
@@ -106,6 +132,7 @@ export default function ProductsCatalog() {
     setMaxPrice(priceBounds.max);
     setQuery("");
     setSort("relevance");
+    setPage(1);
   };
 
   const FiltersPanel = (
@@ -124,7 +151,10 @@ export default function ProductsCatalog() {
               <li key={item.id}>
                 <button
                   type="button"
-                  onClick={() => setCategory(item.id)}
+                  onClick={() => {
+                    setCategory(item.id);
+                    setPage(1);
+                  }}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
                     active
                       ? "bg-brand text-white shadow-sm"
@@ -157,7 +187,10 @@ export default function ProductsCatalog() {
           max={priceBounds.max}
           step={500}
           value={maxPrice}
-          onChange={(e) => setMaxPrice(Number(e.target.value))}
+          onChange={(e) => {
+            setMaxPrice(Number(e.target.value));
+            setPage(1);
+          }}
           className="mt-4 w-full accent-brand"
           aria-label="Filtrar por precio máximo"
         />
@@ -174,7 +207,10 @@ export default function ProductsCatalog() {
           <input
             type="checkbox"
             checked={onlyOffers}
-            onChange={(e) => setOnlyOffers(e.target.checked)}
+            onChange={(e) => {
+              setOnlyOffers(e.target.checked);
+              setPage(1);
+            }}
             className="size-4 accent-brand"
           />
         </label>
@@ -183,7 +219,10 @@ export default function ProductsCatalog() {
           <input
             type="checkbox"
             checked={onlyStock}
-            onChange={(e) => setOnlyStock(e.target.checked)}
+            onChange={(e) => {
+              setOnlyStock(e.target.checked);
+              setPage(1);
+            }}
             className="size-4 accent-brand"
           />
         </label>
@@ -212,16 +251,9 @@ export default function ProductsCatalog() {
       <Container className="relative py-10 lg:py-12">
         {/* Page header */}
         <div className="mb-8 max-w-2xl">
-          <p className="text-sm font-semibold tracking-[0.16em] text-brand-accent uppercase">
-            Catálogo
-          </p>
-          <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
             Productos
           </h1>
-          <p className="mt-3 text-base text-neutral">
-            Encuentra recargas, dispensadores y accesorios Agua Ser Plus.
-            Filtra por categoría o busca por nombre.
-          </p>
         </div>
 
         {/* Search + toolbar */}
@@ -235,7 +267,10 @@ export default function ProductsCatalog() {
             <input
               type="search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
               placeholder="Buscar: bidón, dispensador, hielo..."
               className="h-13 w-full rounded-2xl border border-brand/10 bg-white pr-4 pl-12 text-sm text-foreground shadow-[0_12px_30px_-20px_rgb(0_86_163_/_0.35)] outline-none transition placeholder:text-neutral focus:border-brand/30 focus:ring-2 focus:ring-brand/15"
             />
@@ -260,7 +295,10 @@ export default function ProductsCatalog() {
               <ArrowUpDown className="size-4 text-brand" aria-hidden />
               <select
                 value={sort}
-                onChange={(e) => setSort(e.target.value as SortOption)}
+                onChange={(e) => {
+                  setSort(e.target.value as SortOption);
+                  setPage(1);
+                }}
                 className="bg-transparent font-semibold outline-none"
                 aria-label="Ordenar productos"
               >
@@ -282,7 +320,10 @@ export default function ProductsCatalog() {
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setCategory(item.id)}
+                onClick={() => {
+                  setCategory(item.id);
+                  setPage(1);
+                }}
                 className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
                   active
                     ? "bg-brand text-white"
@@ -308,13 +349,23 @@ export default function ProductsCatalog() {
           </aside>
 
           {/* Results */}
-          <div className="lg:col-span-9">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <div id="catalogo-resultados" className="scroll-mt-24 lg:col-span-9">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-neutral">
                 <span className="font-bold text-foreground">
                   {filtered.length}
                 </span>{" "}
                 {filtered.length === 1 ? "producto" : "productos"}
+                {filtered.length > 0 ? (
+                  <>
+                    {" "}
+                    · mostrando{" "}
+                    <span className="font-semibold text-foreground">
+                      {(currentPage - 1) * PAGE_SIZE + 1}–
+                      {Math.min(currentPage * PAGE_SIZE, filtered.length)}
+                    </span>
+                  </>
+                ) : null}
                 {query.trim() ? (
                   <>
                     {" "}
@@ -325,37 +376,95 @@ export default function ProductsCatalog() {
                   </>
                 ) : null}
               </p>
+              {totalPages > 1 ? (
+                <p className="text-xs font-semibold text-neutral">
+                  Página {currentPage} de {totalPages}
+                </p>
+              ) : null}
             </div>
 
             {filtered.length > 0 ? (
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {filtered.map((product, index) => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    index={index}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                  {pageItems.map((product, index) => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      index={index}
+                    />
+                  ))}
+                </div>
+
+                {totalPages > 1 ? (
+                  <nav
+                    aria-label="Paginación del catálogo"
+                    className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-brand/10 pt-6 sm:flex-row"
+                  >
+                    <button
+                      type="button"
+                      disabled={currentPage <= 1}
+                      onClick={() => goToPage(currentPage - 1)}
+                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                    >
+                      Anterior
+                    </button>
+
+                    <div className="flex flex-wrap items-center justify-center gap-1.5">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            onClick={() => goToPage(n)}
+                            aria-label={`Ir a la página ${n}`}
+                            aria-current={n === currentPage ? "page" : undefined}
+                            className={`flex size-10 items-center justify-center rounded-xl text-sm font-bold transition ${
+                              n === currentPage
+                                ? "bg-brand text-white"
+                                : "bg-white text-brand ring-1 ring-brand/12 hover:bg-brand/5"
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ),
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={currentPage >= totalPages}
+                      onClick={() => goToPage(currentPage + 1)}
+                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                    >
+                      Siguiente
+                    </button>
+                  </nav>
+                ) : null}
+              </>
             ) : (
               <div className="flex flex-col items-center justify-center rounded-[1.75rem] bg-white px-6 py-16 text-center ring-1 ring-brand/10">
                 <span className="flex size-14 items-center justify-center rounded-2xl bg-brand/8 text-brand">
                   <PackageSearch className="size-7" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-lg font-bold text-foreground">
-                  No encontramos productos
+                  {catalogProducts.length === 0
+                    ? "Catálogo en preparación"
+                    : "No encontramos productos"}
                 </h2>
                 <p className="mt-2 max-w-sm text-sm text-neutral">
-                  Prueba con otra búsqueda o limpia los filtros para ver todo el
-                  catálogo.
+                  {catalogProducts.length === 0
+                    ? "Pronto verás aquí las recargas, dispensadores y accesorios Agua Ser Plus."
+                    : "Prueba con otra búsqueda o limpia los filtros para ver todo el catálogo."}
                 </p>
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="mt-6 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-secondary"
-                >
-                  Ver todos los productos
-                </button>
+                {catalogProducts.length > 0 ? (
+                  <button
+                    type="button"
+                    onClick={clearFilters}
+                    className="mt-6 rounded-xl bg-brand px-5 py-2.5 text-sm font-bold text-white transition hover:bg-brand-secondary"
+                  >
+                    Ver todos los productos
+                  </button>
+                ) : null}
               </div>
             )}
           </div>

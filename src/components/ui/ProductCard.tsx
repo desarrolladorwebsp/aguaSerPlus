@@ -2,24 +2,25 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Clock,
   Cpu,
   CupSoda,
+  Eye,
   Layers,
   MapPin,
   Minus,
   Plus,
+  ShoppingBag,
   Snowflake,
   Table2,
   Truck,
 } from "lucide-react";
 import type { ProductOffer, ProductTag } from "@/types/product";
 import { formatClp } from "@/types/product";
-import { company } from "@/lib/company";
-
-const WHATSAPP_BASE = `https://wa.me/${company.whatsapp.number}`;
+import { useCart } from "@/lib/cart/store";
 
 const tintStyles = {
   blue: "from-[#e8f4ff] via-[#f0f8ff] to-white",
@@ -59,30 +60,28 @@ function TagPill({ tag }: { tag: ProductTag }) {
   );
 }
 
-function WhatsAppIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-      className={className}
-    >
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-    </svg>
-  );
-}
-
 export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const [qty, setQty] = useState(1);
+  const [justAdded, setJustAdded] = useState(false);
   const reduce = useReducedMotion();
   const featured = Boolean(product.featured);
+  const { addItem } = useCart();
+  const detailHref = `/productos/${product.id}`;
 
   const decrease = () => setQty((q) => Math.max(1, q - 1));
   const increase = () => setQty((q) => Math.min(99, q + 1));
 
-  const whatsappHref = `${WHATSAPP_BASE}?text=${encodeURIComponent(
-    `Hola AguaSer, quiero pedir: ${product.name} (x${qty}). Precio oferta: ${formatClp(product.priceNow)} c/u.`,
-  )}`;
+  const handleAdd = () => {
+    addItem({
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.priceNow,
+      qty,
+    });
+    setJustAdded(true);
+    window.setTimeout(() => setJustAdded(false), 1200);
+  };
 
   return (
     <motion.article
@@ -108,8 +107,9 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
       ) : null}
 
-      <div
-        className={`relative aspect-[4/3] overflow-hidden bg-gradient-to-br sm:aspect-square ${tintStyles[product.tint]}`}
+      <Link
+        href={detailHref}
+        className={`relative block aspect-[4/3] overflow-hidden bg-gradient-to-br sm:aspect-square ${tintStyles[product.tint]}`}
       >
         <span
           className={`absolute top-3 left-3 z-10 inline-flex items-center rounded-full px-2.5 py-1 text-xs font-extrabold shadow-sm ${badgeStyles[product.badgeTone]}`}
@@ -124,7 +124,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           sizes="(max-width: 768px) 80vw, 25vw"
           className="object-contain p-4 transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 sm:p-5"
         />
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
         <div className="flex flex-wrap gap-1.5">
@@ -134,9 +134,11 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
         <div>
-          <h3 className="text-[15px] font-bold leading-snug text-brand sm:text-base">
-            {product.name}
-          </h3>
+          <Link href={detailHref}>
+            <h3 className="text-[15px] font-bold leading-snug text-brand transition hover:text-brand-secondary sm:text-base">
+              {product.name}
+            </h3>
+          </Link>
           {product.note ? (
             <p className="mt-1 text-xs font-semibold text-neutral">
               {product.note}
@@ -145,54 +147,73 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
         <div className="flex items-baseline gap-2">
-          <span className="text-sm text-neutral line-through">
-            {formatClp(product.priceBefore)}
-          </span>
-          <span className="text-xl font-extrabold text-brand">
+          {product.priceNow > 0 && product.priceBefore > product.priceNow ? (
+            <span className="text-sm text-neutral line-through">
+              {formatClp(product.priceBefore)}
+            </span>
+          ) : null}
+          <span
+            className={`font-extrabold text-brand ${
+              product.priceNow > 0 ? "text-xl" : "text-base"
+            }`}
+          >
             {formatClp(product.priceNow)}
           </span>
         </div>
 
-        <div className="mt-auto flex items-center gap-2 pt-1">
-          <div className="inline-flex items-center rounded-xl bg-surface">
+        <div className="mt-auto space-y-2 pt-1">
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center rounded-xl bg-surface">
+              <button
+                type="button"
+                onClick={decrease}
+                aria-label="Disminuir cantidad"
+                className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5 disabled:opacity-40"
+                disabled={qty <= 1}
+              >
+                <Minus className="size-3.5" aria-hidden />
+              </button>
+              <span
+                className="min-w-6 text-center text-sm font-bold tabular-nums text-foreground"
+                aria-live="polite"
+              >
+                {qty}
+              </span>
+              <button
+                type="button"
+                onClick={increase}
+                aria-label="Aumentar cantidad"
+                className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5"
+              >
+                <Plus className="size-3.5" aria-hidden />
+              </button>
+            </div>
+
             <button
               type="button"
-              onClick={decrease}
-              aria-label="Disminuir cantidad"
-              className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5 disabled:opacity-40"
-              disabled={qty <= 1}
+              onClick={handleAdd}
+              className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-xs font-bold transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] sm:text-[13px] ${
+                justAdded
+                  ? "bg-green text-white"
+                  : featured
+                    ? "bg-yellow text-foreground hover:bg-[#e5a820]"
+                    : "bg-brand text-white hover:bg-brand-secondary"
+              }`}
             >
-              <Minus className="size-3.5" aria-hidden />
-            </button>
-            <span
-              className="min-w-6 text-center text-sm font-bold tabular-nums text-foreground"
-              aria-live="polite"
-            >
-              {qty}
-            </span>
-            <button
-              type="button"
-              onClick={increase}
-              aria-label="Aumentar cantidad"
-              className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5"
-            >
-              <Plus className="size-3.5" aria-hidden />
+              <ShoppingBag className="size-4 shrink-0" aria-hidden />
+              <span className="truncate">
+                {justAdded ? "Agregado" : "Agregar al carro"}
+              </span>
             </button>
           </div>
 
-          <a
-            href={whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-2.5 py-2.5 text-xs font-bold transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.98] sm:text-[13px] ${
-              featured
-                ? "bg-yellow text-foreground hover:bg-[#e5a820]"
-                : "bg-brand text-white hover:bg-brand-secondary"
-            }`}
+          <Link
+            href={detailHref}
+            className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-brand/15 bg-white text-xs font-bold text-brand transition hover:bg-brand/5 sm:text-[13px]"
           >
-            <WhatsAppIcon className="size-4 shrink-0" />
-            <span className="truncate">Pedir por WhatsApp</span>
-          </a>
+            <Eye className="size-3.5" aria-hidden />
+            Ver más información
+          </Link>
         </div>
       </div>
     </motion.article>

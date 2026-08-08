@@ -13,9 +13,13 @@ export type ProductTag = {
 
 export type ProductCategory =
   | "recargas"
+  | "combos"
   | "dispensadores"
+  | "bombas"
+  | "filtracion"
   | "accesorios"
-  | "consumibles";
+  | "consumibles"
+  | "servicios";
 
 export type ProductOffer = {
   id: string;
@@ -36,8 +40,10 @@ export type ProductOffer = {
 
 /**
  * Formatea montos en estilo CLP con punto de miles (ej: $80.000).
+ * Si el monto es 0, muestra "Consultar".
  */
 export function formatClp(amount: number): string {
+  if (amount <= 0) return "Consultar";
   return `$${amount.toLocaleString("es-CL")}`;
 }
 
@@ -52,7 +58,11 @@ export const PRODUCT_CATEGORIES: {
 }[] = [
   { id: "all", label: "Todos" },
   { id: "recargas", label: "Recargas y Bidones" },
+  { id: "combos", label: "Combos" },
   { id: "dispensadores", label: "Dispensadores" },
+  { id: "bombas", label: "Bombas" },
+  { id: "filtracion", label: "Filtración / Ósmosis" },
   { id: "accesorios", label: "Accesorios" },
   { id: "consumibles", label: "Consumibles" },
+  { id: "servicios", label: "Servicios" },
 ];

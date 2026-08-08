@@ -11,4 +11,6 @@ export type ApiResponse<T> = {
 
 export type { ProductOffer, ProductTag } from "./product";
 export { formatClp, getDiscountPercent } from "./product";
+export type { CartItem, CartCustomer, CheckoutOrder, FulfillmentMethod } from "./cart";
+export { FULFILLMENT_LABELS } from "./cart";
 
