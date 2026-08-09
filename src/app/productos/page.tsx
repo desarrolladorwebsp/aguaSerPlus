@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Header from "@/components/shared/Header";
 import Footer from "@/components/shared/Footer";
 import ProductsCatalog from "@/components/products/ProductsCatalog";
@@ -14,7 +15,9 @@ export default function ProductosPage() {
     <>
       <Header />
       <main className="w-full flex-1">
-        <ProductsCatalog />
+        <Suspense fallback={null}>
+          <ProductsCatalog />
+        </Suspense>
       </main>
       <Footer />
     </>

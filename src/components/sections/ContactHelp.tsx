@@ -32,28 +32,10 @@ const initialForm: FormState = {
   consent: false,
 };
 
-const sucursalPhotos = [
-  {
-    src: "/images/sucursal/sucursal-exterior.jpg",
-    alt: "Fachada de la sucursal Agua Ser Plus en Maipú",
-    label: "Fachada",
-  },
-  {
-    src: "/images/sucursal/sucursal-entrada.jpg",
-    alt: "Entrada de la sucursal Agua Ser Plus",
-    label: "Entrada",
-  },
-  {
-    src: "/images/sucursal/sucursal-interior.jpg",
-    alt: "Interior y atención en sucursal Agua Ser Plus",
-    label: "Interior",
-  },
-  {
-    src: "/images/sucursal/sucursal-bodega.jpg",
-    alt: "Bodega con bidones Agua Ser Plus",
-    label: "Bodega",
-  },
-] as const;
+const sucursalPhoto = {
+  src: "/images/sucursal/sucursal.png",
+  alt: "Sucursal Agua Ser Plus en Maipú",
+} as const;
 
 export default function ContactHelp() {
   const reduce = useReducedMotion();
@@ -61,12 +43,12 @@ export default function ContactHelp() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
-  const [lightbox, setLightbox] = useState<number | null>(null);
+  const [lightbox, setLightbox] = useState(false);
 
   useEffect(() => {
-    if (lightbox === null) return;
+    if (!lightbox) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLightbox(null);
+      if (event.key === "Escape") setLightbox(false);
     };
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -390,71 +372,59 @@ export default function ContactHelp() {
           </div>
 
           <div className="mt-6 grid gap-5 lg:grid-cols-12 lg:gap-6">
+            <div className="lg:col-span-5">
+              <button
+                type="button"
+                onClick={() => setLightbox(true)}
+                className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl bg-surface text-left ring-1 ring-brand/10 transition hover:ring-brand/25 focus-visible:outline-none sm:aspect-[4/5] lg:aspect-auto lg:h-full lg:min-h-[480px]"
+              >
+                <Image
+                  src={sucursalPhoto.src}
+                  alt={sucursalPhoto.alt}
+                  fill
+                  sizes="(max-width: 1024px) 90vw, 40vw"
+                  className="object-cover object-center transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.03]"
+                />
+              </button>
+            </div>
+
             <div className="overflow-hidden rounded-2xl ring-1 ring-brand/10 lg:col-span-7">
               <iframe
                 title={`Mapa de ${company.tradeName} — ${company.address.full}`}
                 src={company.address.mapsEmbedUrl}
-                className="h-[280px] w-full border-0 sm:h-[340px] lg:h-full lg:min-h-[360px]"
+                className="h-[320px] w-full border-0 sm:h-[400px] lg:h-full lg:min-h-[480px]"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
               />
             </div>
-
-            <div className="lg:col-span-5">
-              <p className="mb-3 text-sm font-semibold text-foreground">
-                Galería de la sucursal
-              </p>
-              <ul className="grid grid-cols-2 gap-3">
-                {sucursalPhotos.map((photo, index) => (
-                  <li key={photo.src}>
-                    <button
-                      type="button"
-                      onClick={() => setLightbox(index)}
-                      className="group relative block aspect-[4/3] w-full overflow-hidden rounded-xl bg-surface text-left ring-1 ring-brand/10 transition hover:ring-brand/25 focus-visible:outline-none"
-                    >
-                      <Image
-                        src={photo.src}
-                        alt={photo.alt}
-                        fill
-                        sizes="(max-width: 1024px) 45vw, 20vw"
-                        className="object-cover transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.04]"
-                      />
-                      <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#041a2e]/75 to-transparent px-2.5 pt-8 pb-2 text-xs font-semibold text-white">
-                        {photo.label}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </motion.div>
       </Container>
 
-      {lightbox !== null ? (
+      {lightbox ? (
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={sucursalPhotos[lightbox].alt}
+          aria-label={sucursalPhoto.alt}
           className="fixed inset-0 z-50 flex items-center justify-center bg-[#041a2e]/80 p-4 backdrop-blur-sm"
-          onClick={() => setLightbox(null)}
+          onClick={() => setLightbox(false)}
         >
           <button
             type="button"
-            onClick={() => setLightbox(null)}
+            onClick={() => setLightbox(false)}
             className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
             aria-label="Cerrar imagen"
           >
             <X className="size-5" aria-hidden />
           </button>
           <div
-            className="relative aspect-[4/3] w-full max-w-4xl overflow-hidden rounded-2xl bg-black/40 shadow-2xl ring-1 ring-white/20"
+            className="relative aspect-[3/4] w-full max-w-3xl overflow-hidden rounded-2xl bg-black/40 shadow-2xl ring-1 ring-white/20 sm:aspect-[4/5] sm:max-w-4xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={sucursalPhotos[lightbox].src}
-              alt={sucursalPhotos[lightbox].alt}
+              src={sucursalPhoto.src}
+              alt={sucursalPhoto.alt}
               fill
               sizes="90vw"
               className="object-contain"

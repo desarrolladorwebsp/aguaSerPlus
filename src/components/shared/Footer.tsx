@@ -15,13 +15,11 @@ import BrandLogo from "@/components/shared/BrandLogo";
 import Container from "@/components/ui/Container";
 
 const navLinks = [
+  { href: "/", label: "Inicio" },
   { href: "/productos", label: "Productos" },
   { href: "/nuestra-planta", label: "Nuestra Planta" },
-  { href: "/#alcalina", label: "Agua Alcalina" },
+  { href: "/#ayuda", label: "Contactos" },
   { href: "/carrito", label: "Carro" },
-  { href: "/#recargas", label: "Recargas" },
-  { href: "/#ofertas", label: "Ofertas" },
-  { href: "/#ayuda", label: "Ayuda" },
 ] as const;
 
 const pillars = [

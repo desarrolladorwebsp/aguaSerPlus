@@ -1,12 +1,12 @@
 "use client";
 
+import { Check, ShoppingBag } from "lucide-react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShoppingBag } from "lucide-react";
 import type { ProductOffer } from "@/types/product";
 import { formatClp } from "@/types/product";
 import { useCart } from "@/lib/cart/store";
-import { useState } from "react";
 
 type ProductStripCardProps = {
   product: ProductOffer;
@@ -29,7 +29,7 @@ export default function ProductStripCard({ product }: ProductStripCardProps) {
       qty: 1,
     });
     setJustAdded(true);
-    window.setTimeout(() => setJustAdded(false), 1200);
+    window.setTimeout(() => setJustAdded(false), 1400);
   };
 
   return (
@@ -73,13 +73,18 @@ export default function ProductStripCard({ product }: ProductStripCardProps) {
         <button
           type="button"
           onClick={handleAdd}
+          aria-live="polite"
           className={`mt-auto inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-bold transition active:scale-[0.98] ${
             justAdded
-              ? "bg-green text-white"
+              ? "animate-[cart-added_0.45s_ease] bg-green text-white"
               : "bg-brand text-white hover:bg-brand-secondary"
           }`}
         >
-          <ShoppingBag className="size-3.5" aria-hidden />
+          {justAdded ? (
+            <Check className="size-3.5" strokeWidth={2.5} aria-hidden />
+          ) : (
+            <ShoppingBag className="size-3.5" aria-hidden />
+          )}
           {justAdded ? "Agregado" : "Agregar"}
         </button>
       </div>

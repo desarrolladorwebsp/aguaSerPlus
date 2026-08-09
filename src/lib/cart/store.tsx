@@ -22,7 +22,7 @@ type CartContextValue = {
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-  addItem: (item: AddItemInput) => void;
+  addItem: (item: AddItemInput, options?: { open?: boolean }) => void;
   removeItem: (productId: string) => void;
   setQty: (productId: string, qty: number) => void;
   clear: () => void;
@@ -123,29 +123,37 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const addItem = useCallback((item: AddItemInput) => {
-    const qtyToAdd = Math.min(99, Math.max(1, item.qty ?? 1));
-    const prev = getSnapshot().items;
-    const existing = prev.find((p) => p.productId === item.productId);
-    const next = existing
-      ? prev.map((p) =>
-          p.productId === item.productId
-            ? { ...p, qty: Math.min(99, p.qty + qtyToAdd) }
-            : p,
-        )
-      : [
-          ...prev,
-          {
-            productId: item.productId,
-            name: item.name,
-            image: item.image,
-            price: item.price,
-            qty: qtyToAdd,
-          },
-        ];
-    writeItems(next);
-    writeOpen(true);
-  }, []);
+  const addItem = useCallback(
+    (item: AddItemInput, options?: { open?: boolean }) => {
+      const qtyToAdd = Math.min(99, Math.max(1, item.qty ?? 1));
+      const prev = getSnapshot().items;
+      const existing = prev.find((p) => p.productId === item.productId);
+      const next = existing
+        ? prev.map((p) =>
+            p.productId === item.productId
+              ? { ...p, qty: Math.min(99, p.qty + qtyToAdd) }
+              : p,
+          )
+        : [
+            ...prev,
+            {
+              productId: item.productId,
+              name: item.name,
+              image: item.image,
+              price: item.price,
+              qty: qtyToAdd,
+            },
+          ];
+      writeItems(next);
+
+      const isDesktop =
+        typeof window !== "undefined" &&
+        window.matchMedia("(min-width: 1024px)").matches;
+      const shouldOpen = options?.open ?? isDesktop;
+      if (shouldOpen) writeOpen(true);
+    },
+    [],
+  );
 
   const removeItem = useCallback((productId: string) => {
     writeItems(getSnapshot().items.filter((p) => p.productId !== productId));

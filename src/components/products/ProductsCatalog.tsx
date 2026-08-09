@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowUpDown,
@@ -24,6 +25,19 @@ type SortOption = "relevance" | "price-asc" | "price-desc" | "name";
 /** 12 productos por página: 4 filas en grid de 3 columnas (rápido y limpio). */
 const PAGE_SIZE = 12;
 
+const CATEGORY_IDS = new Set(
+  PRODUCT_CATEGORIES.map((c) => c.id).filter((id) => id !== "all"),
+);
+
+function parseCategoryParam(
+  value: string | null,
+): ProductCategory | "all" {
+  if (!value) return "all";
+  return CATEGORY_IDS.has(value as ProductCategory)
+    ? (value as ProductCategory)
+    : "all";
+}
+
 const sortOptions: { id: SortOption; label: string }[] = [
   { id: "relevance", label: "Relevancia" },
   { id: "price-asc", label: "Precio: menor a mayor" },
@@ -32,8 +46,11 @@ const sortOptions: { id: SortOption; label: string }[] = [
 ];
 
 export default function ProductsCatalog() {
+  const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<ProductCategory | "all">("all");
+  const [category, setCategory] = useState<ProductCategory | "all">(() =>
+    parseCategoryParam(searchParams.get("categoria")),
+  );
   const [onlyOffers, setOnlyOffers] = useState(false);
   const [onlyStock, setOnlyStock] = useState(true);
   const [maxPrice, setMaxPrice] = useState(() => {

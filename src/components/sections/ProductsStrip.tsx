@@ -7,12 +7,37 @@ import Link from "next/link";
 import ProductStripCard from "@/components/ui/ProductStripCard";
 import { catalogProducts } from "@/lib/products";
 import Container from "@/components/ui/Container";
+import type { ProductCategory } from "@/types/product";
 
-export default function ProductsStrip() {
+type ProductsStripProps = {
+  id?: string;
+  headingId?: string;
+  eyebrow?: string;
+  title?: string;
+  description?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  category?: ProductCategory;
+};
+
+export default function ProductsStrip({
+  id = "productos-destacados",
+  headingId = "products-strip-heading",
+  eyebrow = "Catálogo",
+  title = "Nuestros productos",
+  description = "Desliza para ver el catálogo. Encuentra recargas, dispensadores y más.",
+  ctaLabel = "Ver todos los productos",
+  ctaHref = "/productos",
+  category,
+}: ProductsStripProps) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  const products = catalogProducts.filter((p) => p.inStock !== false);
+  const products = catalogProducts.filter((p) => {
+    if (p.inStock === false) return false;
+    if (category && p.category !== category) return false;
+    return true;
+  });
 
   const scrollByCard = (direction: "prev" | "next") => {
     const node = scrollerRef.current;
@@ -24,10 +49,12 @@ export default function ProductsStrip() {
     });
   };
 
+  if (products.length === 0) return null;
+
   return (
     <section
-      id="productos-destacados"
-      aria-labelledby="products-strip-heading"
+      id={id}
+      aria-labelledby={headingId}
       className="relative scroll-mt-20 overflow-hidden bg-surface py-10 sm:scroll-mt-24 sm:py-12"
     >
       <Container className="relative">
@@ -41,18 +68,15 @@ export default function ProductsStrip() {
           <div>
             <p className="inline-flex items-center gap-1.5 text-xs font-bold tracking-[0.16em] text-brand-accent uppercase">
               <Package className="size-3.5" aria-hidden />
-              Catálogo
+              {eyebrow}
             </p>
             <h2
-              id="products-strip-heading"
+              id={headingId}
               className="mt-2 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl"
             >
-              Nuestros productos
+              {title}
             </h2>
-            <p className="mt-1.5 max-w-lg text-sm text-neutral">
-              Desliza para ver el catálogo. Encuentra recargas, dispensadores y
-              más.
-            </p>
+            <p className="mt-1.5 max-w-lg text-sm text-neutral">{description}</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -73,10 +97,10 @@ export default function ProductsStrip() {
               <ChevronRight className="size-5" aria-hidden />
             </button>
             <Link
-              href="/productos"
+              href={ctaHref}
               className="inline-flex items-center gap-2 rounded-full bg-brand px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-secondary"
             >
-              Ver todos los productos
+              {ctaLabel}
               <ArrowRight className="size-4" aria-hidden />
             </Link>
           </div>
