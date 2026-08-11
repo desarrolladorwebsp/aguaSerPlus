@@ -21,6 +21,19 @@ export type ProductCategory =
   | "consumibles"
   | "servicios";
 
+export type ProductSpec = {
+  label: string;
+  value: string;
+};
+
+export type ProductColorOption = {
+  name: string;
+  codes: string;
+  /** Hex or Tailwind-friendly swatch color */
+  swatch: string;
+  image?: string;
+};
+
 export type ProductOffer = {
   id: string;
   name: string;
@@ -31,6 +44,17 @@ export type ProductOffer = {
   badgeTone: "green" | "blue" | "yellow";
   note?: string;
   image: string;
+  /** Galería adicional (la primera puede repetir `image`) */
+  images?: string[];
+  brand?: string;
+  subtitle?: string;
+  /** Características técnicas en lista */
+  characteristics?: ProductSpec[];
+  /** Beneficios / íconos del catálogo */
+  features?: string[];
+  /** Tabla compacta (voltaje, potencia, etc.) */
+  specs?: ProductSpec[];
+  colors?: ProductColorOption[];
   tint: "blue" | "green" | "yellow";
   tags: ProductTag[];
   featured?: boolean;

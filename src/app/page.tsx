@@ -15,7 +15,7 @@ export default function Home() {
       <main className="w-full flex-1">
         <Hero />
         <SpecialOffers />
-        <ProductsStrip />
+        <ProductsStrip tone="blue" />
         <RecargaBidones />
         <ProductsStrip
           id="dispensadores"
@@ -26,6 +26,7 @@ export default function Home() {
           ctaLabel="Ver más dispensadores"
           ctaHref="/productos?categoria=dispensadores"
           category="dispensadores"
+          tone="green"
         />
         <AguaAlcalina />
         <ProductsStrip
@@ -37,6 +38,7 @@ export default function Home() {
           ctaLabel="Ver más accesorios"
           ctaHref="/productos?categoria=accesorios"
           category="accesorios"
+          tone="yellow"
         />
         <ContactHelp />
         <GoogleReviews />

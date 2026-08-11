@@ -93,8 +93,8 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         delay: index * 0.07,
         ease: [0.32, 0.72, 0, 1],
       }}
-      whileHover={reduce ? undefined : { y: -4 }}
-      className={`group flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-background shadow-[0_16px_40px_-24px_rgb(0_86_163_/_0.35)] transition duration-500 ${
+      whileHover={reduce ? undefined : { y: -8, scale: 1.02 }}
+      className={`group flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-background shadow-[0_16px_40px_-24px_rgb(0_86_163_/_0.35)] transition-[box-shadow] duration-500 hover:shadow-[0_28px_50px_-20px_rgb(0_86_163_/_0.45)] ${
         featured
           ? "ring-2 ring-yellow shadow-[0_18px_48px_-18px_rgb(240_180_41_/_0.55)]"
           : "ring-1 ring-brand/8"
@@ -122,7 +122,9 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
           alt={product.name}
           fill
           sizes="(max-width: 768px) 80vw, 25vw"
-          className="object-contain p-4 transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105 sm:p-5"
+          priority={index < 2}
+          loading={index < 2 ? "eager" : "lazy"}
+          className="object-contain p-4 transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-110 sm:p-5"
         />
       </Link>
 

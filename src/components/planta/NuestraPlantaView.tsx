@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
@@ -11,8 +12,15 @@ import {
   RefreshCw,
   ShieldCheck,
   Sparkles,
+  X,
+  ZoomIn,
 } from "lucide-react";
 import Container from "@/components/ui/Container";
+
+const processDiagram = {
+  src: "/images/procesos/proceso-envasado.jpg",
+  alt: "Diagrama del proceso de purificación y envasado Agua Ser Plus: desde fuentes naturales hasta el envasado final",
+} as const;
 
 const processSteps = [
   {
@@ -107,6 +115,21 @@ const downloads = [
 
 export default function NuestraPlantaView() {
   const reduce = useReducedMotion();
+  const [lightbox, setLightbox] = useState(false);
+
+  useEffect(() => {
+    if (!lightbox) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setLightbox(false);
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [lightbox]);
 
   return (
     <>
@@ -193,24 +216,30 @@ export default function NuestraPlantaView() {
             </p>
           </motion.div>
 
-          <motion.div
+          <motion.button
+            type="button"
+            onClick={() => setLightbox(true)}
             initial={reduce ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.6, delay: 0.08 }}
-            className="mt-8 overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-brand/10"
+            className="group relative mt-8 block w-full overflow-hidden rounded-3xl bg-white text-left shadow-soft ring-1 ring-brand/10 transition hover:ring-brand/25 focus-visible:outline-none"
           >
-            <div className="relative aspect-[16/9] w-full bg-white sm:aspect-[2/1]">
+            <div className="relative aspect-[4/3] w-full bg-white sm:aspect-[16/9] lg:aspect-[2/1]">
               <Image
-                src="/images/procesos/proceso-envasado.jpg"
-                alt="Diagrama del proceso de purificación y envasado Agua Ser Plus: desde fuentes naturales hasta el envasado final"
+                src={processDiagram.src}
+                alt={processDiagram.alt}
                 fill
-                className="object-contain p-3 sm:p-6"
+                className="object-contain p-3 transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-[1.02] sm:p-6"
                 sizes="(max-width: 1400px) 100vw, 1400px"
                 priority
               />
             </div>
-          </motion.div>
+            <span className="absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full bg-brand/90 px-3 py-1.5 text-xs font-bold text-white backdrop-blur transition group-hover:bg-brand sm:right-4 sm:bottom-4">
+              <ZoomIn className="size-3.5" aria-hidden />
+              Ampliar
+            </span>
+          </motion.button>
 
           <ol className="mt-10 grid gap-x-8 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
             {processSteps.map((step, i) => (
@@ -357,6 +386,38 @@ export default function NuestraPlantaView() {
           </div>
         </Container>
       </section>
+
+      {lightbox ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={processDiagram.alt}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[#041a2e]/85 p-4 backdrop-blur-sm"
+          onClick={() => setLightbox(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(false)}
+            className="absolute top-4 right-4 flex size-11 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25"
+            aria-label="Cerrar imagen"
+          >
+            <X className="size-5" aria-hidden />
+          </button>
+          <div
+            className="relative aspect-[4/3] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-white/20 sm:aspect-[16/9]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={processDiagram.src}
+              alt={processDiagram.alt}
+              fill
+              sizes="95vw"
+              className="object-contain p-3 sm:p-6"
+              priority
+            />
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }

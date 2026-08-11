@@ -1,14 +1,21 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import {
   ArrowRight,
-  Leaf,
+  Droplets,
   MapPin,
   ShieldCheck,
-  Truck,
+  Star,
+  Wrench,
 } from "lucide-react";
 import { company } from "@/lib/company";
 import Container from "@/components/ui/Container";
@@ -32,71 +39,103 @@ const stagger: Variants = {
 };
 
 const categories = [
+  { href: "/productos?categoria=filtracion", label: "Filtros" },
+  { href: "/productos?categoria=dispensadores", label: "Dispensadores" },
   { href: "/#alcalina", label: "Agua Alcalina" },
-  { href: "/#recargas", label: "Recargas 20L" },
-  { href: "/productos", label: "Productos" },
 ] as const;
 
 const benefits = [
   {
+    icon: Wrench,
+    title: "Equipos y maquinaria",
+    text: "Filtros, purificadores y sistemas para hogar y empresa.",
+  },
+  {
+    icon: Droplets,
+    title: "Agua de calidad",
+    text: "Nuestros equipos trabajan el agua para un resultado premium.",
+  },
+  {
     icon: ShieldCheck,
-    title: "Agua controlada",
-    text: "Purificación con estándar de calidad.",
+    title: "Tecnología confiable",
+    text: "Soluciones con ozono, filtración y agua ilimitada a la red.",
+  },
+] as const;
+
+const showcaseProducts = [
+  {
+    id: "premium",
+    name: "Premium con grifo",
+    tag: "Filtro Premium",
+    image: "/products/product-premium-negro-rosegold.png",
   },
   {
-    icon: Truck,
-    title: "Despacho en Santiago",
-    text: "Entrega a domicilio, rápida y simple.",
+    id: "ultra-ice",
+    name: "Ultra Ice",
+    tag: "Purificador",
+    image: "/products/product-ultra-ice-negro.png",
   },
   {
-    icon: Leaf,
-    title: "Más sostenible",
-    text: "Bidones retornables y reutilizables.",
+    id: "easy",
+    name: "EASY purificador",
+    tag: "Filtro compacto",
+    image: "/products/product-easy-negro.png",
+  },
+  {
+    id: "colors",
+    name: "COLORS con grifo",
+    tag: "Filtro de diseño",
+    image: "/products/product-colors-azul.png",
   },
 ] as const;
 
 export default function Hero() {
   const reduce = useReducedMotion();
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (reduce) return;
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % showcaseProducts.length);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [reduce]);
+
+  const activeProduct = showcaseProducts[active];
 
   return (
     <section
       aria-labelledby="hero-heading"
-      className="relative isolate min-h-[min(92dvh,880px)] overflow-hidden"
+      className="relative isolate overflow-hidden bg-[#041a2e] py-16 sm:py-20 lg:flex lg:min-h-[min(88dvh,820px)] lg:flex-col lg:justify-center lg:py-16"
     >
-      <Image
-        src="/images/hero-delivery-bidon.jpg"
-        alt="Repartidor Agua Ser Plus cargando un bidón de agua 20 litros"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-[68%_center] sm:object-[72%_center]"
-      />
-
-      {/* Lectura a la izquierda; foto protagonista a la derecha */}
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        <Image
+          src="/images/hero-kitchen-bg.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
       <div
         aria-hidden
-        className="absolute inset-0"
+        className="pointer-events-none absolute inset-0"
         style={{
           background: `
-            linear-gradient(
-              105deg,
-              rgb(4 26 46 / 0.92) 0%,
-              rgb(4 26 46 / 0.78) 34%,
-              rgb(4 26 46 / 0.42) 58%,
-              rgb(4 26 46 / 0.18) 78%,
-              rgb(4 26 46 / 0.28) 100%
-            ),
-            linear-gradient(
-              180deg,
-              rgb(4 26 46 / 0.25) 0%,
-              transparent 28%,
-              rgb(4 26 46 / 0.55) 100%
-            )
+            radial-gradient(ellipse 55% 65% at 8% 15%, rgb(0 153 221 / 0.32), transparent 55%),
+            radial-gradient(ellipse 50% 55% at 100% 90%, rgb(31 169 122 / 0.2), transparent 50%),
+            linear-gradient(105deg, rgb(4 26 46 / 0.94) 0%, rgb(4 26 46 / 0.86) 38%, rgb(4 26 46 / 0.62) 68%, rgb(0 86 163 / 0.55) 100%),
+            linear-gradient(180deg, rgb(4 26 46 / 0.55) 0%, rgb(4 26 46 / 0.25) 35%, rgb(4 26 46 / 0.6) 100%)
           `,
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-accent/50 to-transparent"
+      />
 
-      <Container className="relative flex min-h-[min(92dvh,880px)] flex-col justify-end pt-16 pb-10 sm:justify-center sm:pt-20 sm:pb-14 lg:pb-16">
+      <Container className="relative grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-10">
         <motion.div
           variants={stagger}
           initial={reduce ? false : "hidden"}
@@ -121,7 +160,7 @@ export default function Hero() {
                 <span className="font-semibold text-brand-accent">Plus</span>
               </p>
               <p className="mt-0.5 text-xs font-medium text-white/65 sm:text-sm">
-                Salud · Economía · Reciclaje
+                Tecnología · Salud · Agua pura
               </p>
             </div>
           </motion.div>
@@ -131,34 +170,35 @@ export default function Hero() {
             variants={fadeUp}
             className="mt-7 text-[2.65rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-white sm:mt-8 sm:text-5xl lg:text-[3.5rem]"
           >
-            El agua más pura,
+            Tecnología de agua
             <span className="mt-1 block text-brand-accent">
-              directo a tu puerta.
+              para tu hogar.
             </span>
           </motion.h1>
 
           <motion.p
             variants={fadeUp}
-            className="mt-5 max-w-[36ch] text-[1.05rem] leading-relaxed text-white/75"
+            className="mt-5 max-w-[38ch] text-[1.05rem] leading-relaxed text-white/75"
           >
-            Bidones, dispensadores y suscripciones para hogar y empresa en
-            Santiago.
+            Filtros, purificadores y sistemas de agua ilimitada. El agua sigue
+            siendo el centro: nuestras máquinas la tratan, alcalinizan y
+            protegen tu hogar.
           </motion.p>
 
-            <motion.div
-              variants={fadeUp}
-              className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+          <motion.div
+            variants={fadeUp}
+            className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center"
+          >
+            <Link
+              href="/productos?categoria=filtracion"
+              className="group inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-green px-6 text-[15px] font-bold text-white shadow-[0_20px_44px_-18px_rgb(31_169_122_/_0.55)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#189866] active:scale-[0.98]"
             >
-              <Link
-                href="/productos"
-                className="group inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-green px-6 text-[15px] font-bold text-white shadow-[0_20px_44px_-18px_rgb(31_169_122_/_0.55)] transition duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#189866] active:scale-[0.98]"
-              >
-                Ver productos
-                <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 transition group-hover:translate-x-0.5">
-                  <ArrowRight className="size-4" aria-hidden />
-                </span>
-              </Link>
-            </motion.div>
+              Ver equipos
+              <span className="flex size-9 items-center justify-center rounded-xl bg-white/15 transition group-hover:translate-x-0.5">
+                <ArrowRight className="size-4" aria-hidden />
+              </span>
+            </Link>
+          </motion.div>
 
           <motion.div
             variants={fadeUp}
@@ -183,13 +223,128 @@ export default function Hero() {
               ))}
             </nav>
           </motion.div>
+
+          <motion.ul
+            variants={fadeUp}
+            className="mt-10 grid grid-cols-1 gap-5 border-t border-white/15 pt-8 sm:grid-cols-3 sm:gap-6 lg:hidden"
+          >
+            {benefits.map(({ icon: Icon, title, text }) => (
+              <li key={title} className="flex gap-3">
+                <span className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-white/10 text-brand-accent ring-1 ring-white/15">
+                  <Icon className="size-5" strokeWidth={1.6} aria-hidden />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-white">{title}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-white/65">
+                    {text}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </motion.ul>
         </motion.div>
 
+        {/* Showcase de productos reales */}
+        <motion.div
+          initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.15, ease }}
+          className="relative mx-auto flex h-[400px] w-full max-w-md flex-col gap-4 sm:h-[460px] lg:h-[560px] lg:max-w-none"
+        >
+          <div className="relative flex-1 overflow-hidden rounded-[1.75rem] bg-white/95 shadow-[0_28px_60px_-24px_rgb(0_0_0_/_0.5)] ring-1 ring-white/40 sm:rounded-[2rem]">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeProduct.id}
+                initial={reduce ? false : { opacity: 0, scale: 0.94 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={reduce ? undefined : { opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.45, ease }}
+                className="absolute inset-0 p-6 sm:p-8 lg:p-10"
+              >
+                <div className="relative h-full w-full">
+                  <Image
+                    src={activeProduct.image}
+                    alt={activeProduct.name}
+                    fill
+                    sizes="(max-width: 1024px) 420px, 480px"
+                    className="object-contain"
+                    priority
+                  />
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            <span className="absolute left-4 top-4 z-10 inline-flex items-center rounded-full bg-brand/90 px-3 py-1 text-xs font-bold text-white backdrop-blur sm:left-5 sm:top-5">
+              {activeProduct.tag}
+            </span>
+
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6, ease }}
+              className="absolute right-4 top-4 z-10 sm:right-5 sm:top-5"
+            >
+              <div className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-[0_14px_32px_-14px_rgb(0_0_0_/_0.4)] ring-1 ring-black/5 sm:px-4 sm:py-3">
+                <div className="flex text-yellow">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Star
+                      key={i}
+                      className="size-3 fill-yellow sm:size-3.5"
+                      aria-hidden
+                    />
+                  ))}
+                </div>
+                <div className="hidden leading-tight sm:block">
+                  <p className="text-sm font-extrabold text-foreground">
+                    4.9/5
+                  </p>
+                  <p className="text-[11px] text-neutral">Reseñas Google</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
+          <div
+            role="tablist"
+            aria-label="Seleccionar producto destacado"
+            className="flex items-center justify-center gap-3"
+          >
+            {showcaseProducts.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={index === active}
+                aria-label={item.name}
+                onClick={() => setActive(index)}
+                className={`relative shrink-0 overflow-hidden rounded-xl bg-white/95 p-2 shadow-[0_10px_24px_-12px_rgb(0_0_0_/_0.45)] transition duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] ${
+                  index === active
+                    ? "size-16 ring-2 ring-brand-accent sm:size-[4.5rem]"
+                    : "size-14 opacity-70 ring-1 ring-white/30 hover:opacity-100 sm:size-16"
+                }`}
+              >
+                <div className="relative h-full w-full">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    sizes="72px"
+                    className="object-contain"
+                  />
+                </div>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      </Container>
+
+      <Container className="relative mt-14 hidden lg:mt-20 lg:block">
         <motion.ul
           initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6, ease }}
-          className="mt-12 grid grid-cols-1 gap-5 border-t border-white/15 pt-8 sm:mt-14 sm:grid-cols-3 sm:gap-8"
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 0.6, ease }}
+          className="grid grid-cols-3 gap-8 border-t border-white/15 pt-8"
         >
           {benefits.map(({ icon: Icon, title, text }) => (
             <li key={title} className="flex gap-3">

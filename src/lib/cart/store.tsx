@@ -4,7 +4,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useState,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
@@ -103,8 +105,10 @@ function getSnapshot(): CartSnapshot {
   return memorySnapshot;
 }
 
+const EMPTY_SNAPSHOT: CartSnapshot = { items: [], isOpen: false };
+
 function getServerSnapshot(): CartSnapshot {
-  return { items: [], isOpen: false };
+  return EMPTY_SNAPSHOT;
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -114,7 +118,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     getServerSnapshot,
   );
 
-  const hydrated = typeof window !== "undefined";
+  // Real hydration flag: flips to true only once mounted on the client, one
+  // tick after the initial hydration render. Consumers (e.g. checkout) rely
+  // on this to avoid acting on the empty server snapshot before the store
+  // has synced with localStorage.
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
 
   const openCart = useCallback(() => writeOpen(true), []);
   const closeCart = useCallback(() => writeOpen(false), []);

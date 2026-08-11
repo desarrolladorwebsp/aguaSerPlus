@@ -20,23 +20,23 @@ import { formatClp } from "@/types/product";
 const benefits = [
   {
     icon: Atom,
-    title: "pH alcalino equilibrado",
-    text: "Agua con pH elevado, pensada para quienes buscan una hidratación más limpia y moderna.",
-  },
-  {
-    icon: Droplets,
-    title: "Sabor suave y puro",
-    text: "Perfil limpio, sin residuales. Ideal para beber a diario en casa u oficina.",
+    title: "Tecnología alcalina",
+    text: "Nueva generación de equipos conectados a la red: agua alcalina ilimitada, única en Chile con Agua Ser Plus.",
   },
   {
     icon: HeartPulse,
-    title: "Hidratación premium",
-    text: "Una alternativa superior al agua convencional, con foco en calidad y bienestar.",
+    title: "Alcaliniza tu cuerpo",
+    text: "Pensado en la salud de los chilenos: hidratación diaria que ayuda a equilibrar la acidez del organismo.",
   },
   {
     icon: ShieldCheck,
-    title: "Proceso controlado",
-    text: "Seleccionada y distribuida por Agua Ser Plus con el mismo estándar de confianza de siempre.",
+    title: "Ozono desinfectante",
+    text: "Con ozono para desinfectar bacterias y microorganismos, aportando más seguridad al agua de tu hogar.",
+  },
+  {
+    icon: Droplets,
+    title: "Agua ilimitada",
+    text: "Sistemas de agua ilimitada para casa u oficina: calidad premium sin depender solo del bidón.",
   },
 ] as const;
 
@@ -104,27 +104,25 @@ export default function AguaAlcalina() {
               </span>
             </h2>
 
-            <p className="mt-4 max-w-[40ch] text-base leading-relaxed text-white/75 sm:text-lg">
-              Estamos trayendo un producto que casi nadie ofrece en el país:
-              <span className="font-semibold text-white">
-                {" "}
-                agua alcalina premium
-              </span>
-              . En Chile, esta línea la traemos nosotros — los dueños de Agua
-              Ser Plus — para que puedas acceder a una hidratación distinta,
-              exclusiva y de alto estándar.
+            <p className="mt-4 max-w-[42ch] text-base leading-relaxed text-white/75 sm:text-lg">
+              La nueva tecnología de agua alcalina a la red,{" "}
+              <span className="font-semibold text-white">única en Chile</span>.
+              Nuestros sistemas de agua ilimitada están pensados en la salud de
+              los chilenos: alcaliniza tu cuerpo día a día. Además, cuentan con{" "}
+              <span className="font-semibold text-white">ozono</span> para
+              desinfectar bacterias y microorganismos de tu hogar.
             </p>
 
             <ul className="mt-6 flex flex-wrap gap-2.5">
               <li className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/90 ring-1 ring-white/12">
                 <Sparkles className="size-3.5 text-yellow" aria-hidden />
-                Lanzamiento exclusivo
+                Única en Chile
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/90 ring-1 ring-white/12">
-                Distribución propia
+                Agua ilimitada a la red
               </li>
               <li className="inline-flex items-center gap-1.5 rounded-full bg-white/8 px-3 py-1.5 text-xs font-semibold text-white/90 ring-1 ring-white/12">
-                Stock limitado
+                Con ozono
               </li>
             </ul>
 
@@ -151,8 +149,8 @@ export default function AguaAlcalina() {
             </div>
 
             <p className="mt-5 text-xs leading-relaxed text-white/45">
-              Exclusividad de importación y distribución Agua Ser Plus en Chile.
-              Disponibilidad sujeta a stock del lanzamiento.
+              Tecnología exclusiva Agua Ser Plus en Chile. Agua alcalina a la
+              red, con ozono, pensada para tu salud y la de tu hogar.
             </p>
           </motion.div>
 
@@ -198,7 +196,7 @@ export default function AguaAlcalina() {
                     Agua Alcalina 20L
                   </p>
                   <p className="mt-1 text-sm text-white/60">
-                    Solo disponible a través de Agua Ser Plus
+                    Agua ilimitada · alcalina · con ozono
                   </p>
                 </div>
               </div>

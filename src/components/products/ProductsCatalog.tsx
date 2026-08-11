@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   ArrowUpDown,
   Filter,
@@ -46,6 +46,7 @@ const sortOptions: { id: SortOption; label: string }[] = [
 ];
 
 export default function ProductsCatalog() {
+  const reduce = useReducedMotion();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<ProductCategory | "all">(() =>
@@ -174,7 +175,7 @@ export default function ProductsCatalog() {
                   }}
                   className={`flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
                     active
-                      ? "bg-brand text-white shadow-sm"
+                      ? "bg-gradient-to-r from-brand to-brand-secondary text-white shadow-[0_10px_22px_-12px_rgb(0_86_163_/_0.5)]"
                       : "bg-surface text-foreground hover:bg-brand/8"
                   }`}
                 >
@@ -262,101 +263,117 @@ export default function ProductsCatalog() {
     <section className="relative bg-[#f5faff]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-[radial-gradient(ellipse_at_top,_rgb(0_119_200_/_0.12),_transparent_60%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-72 overflow-hidden"
+        style={{
+          background: `
+            radial-gradient(ellipse 55% 60% at 12% 0%, rgb(0 153 221 / 0.14), transparent 55%),
+            radial-gradient(ellipse 45% 50% at 90% 10%, rgb(31 169 122 / 0.1), transparent 55%),
+            radial-gradient(ellipse 35% 40% at 60% 0%, rgb(240 180 41 / 0.1), transparent 50%)
+          `,
+        }}
       />
 
-      <Container className="relative py-10 lg:py-12">
-        {/* Page header */}
-        <div className="mb-8 max-w-2xl">
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">
-            Productos
-          </h1>
-        </div>
+      {/* Sticky search + categories */}
+      <div className="sticky top-16 z-30 border-b border-brand/8 bg-[#f5faff]/95 backdrop-blur-md sm:top-[72px]">
+        <Container className="relative py-4 lg:py-5">
+          <motion.div
+            initial={reduce ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+            className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6"
+          >
+            <h1 className="shrink-0 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+              Productos
+            </h1>
 
-        {/* Search + toolbar */}
-        <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-center">
-          <label className="relative flex-1">
-            <span className="sr-only">Buscar productos</span>
-            <Search
-              className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-neutral"
-              aria-hidden
-            />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                setPage(1);
-              }}
-              placeholder="Buscar: bidón, dispensador, hielo..."
-              className="h-13 w-full rounded-2xl border border-brand/10 bg-white pr-4 pl-12 text-sm text-foreground shadow-[0_12px_30px_-20px_rgb(0_86_163_/_0.35)] outline-none transition placeholder:text-neutral focus:border-brand/30 focus:ring-2 focus:ring-brand/15"
-            />
-          </label>
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center lg:max-w-2xl lg:flex-1">
+              <label className="relative min-w-0 flex-1">
+                <span className="sr-only">Buscar productos</span>
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-neutral"
+                  aria-hidden
+                />
+                <input
+                  type="search"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder="Buscar: bidón, dispensador, hielo..."
+                  className="h-12 w-full rounded-2xl border border-brand/10 bg-white pr-4 pl-12 text-sm text-foreground shadow-[0_12px_30px_-20px_rgb(0_86_163_/_0.35)] outline-none transition placeholder:text-neutral focus:border-brand/30 focus:ring-2 focus:ring-brand/15 sm:h-13"
+                />
+              </label>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              className="inline-flex h-13 items-center gap-2 rounded-2xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand lg:hidden"
-            >
-              <SlidersHorizontal className="size-4" aria-hidden />
-              Filtros
-              {activeFiltersCount > 0 ? (
-                <span className="rounded-full bg-brand px-2 py-0.5 text-xs text-white">
-                  {activeFiltersCount}
-                </span>
-              ) : null}
-            </button>
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  className="inline-flex h-12 items-center gap-2 rounded-2xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand sm:h-13 lg:hidden"
+                >
+                  <SlidersHorizontal className="size-4" aria-hidden />
+                  Filtros
+                  {activeFiltersCount > 0 ? (
+                    <span className="rounded-full bg-brand px-2 py-0.5 text-xs text-white">
+                      {activeFiltersCount}
+                    </span>
+                  ) : null}
+                </button>
 
-            <label className="inline-flex h-13 items-center gap-2 rounded-2xl border border-brand/15 bg-white px-4 text-sm text-foreground">
-              <ArrowUpDown className="size-4 text-brand" aria-hidden />
-              <select
-                value={sort}
-                onChange={(e) => {
-                  setSort(e.target.value as SortOption);
-                  setPage(1);
-                }}
-                className="bg-transparent font-semibold outline-none"
-                aria-label="Ordenar productos"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <label className="inline-flex h-12 items-center gap-2 rounded-2xl border border-brand/15 bg-white px-4 text-sm text-foreground sm:h-13">
+                  <ArrowUpDown className="size-4 text-brand" aria-hidden />
+                  <select
+                    value={sort}
+                    onChange={(e) => {
+                      setSort(e.target.value as SortOption);
+                      setPage(1);
+                    }}
+                    className="bg-transparent font-semibold outline-none"
+                    aria-label="Ordenar productos"
+                  >
+                    {sortOptions.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mt-4">
+            {PRODUCT_CATEGORIES.map((item) => {
+              const active = category === item.id;
+              return (
+                <motion.button
+                  key={item.id}
+                  type="button"
+                  whileHover={reduce ? undefined : { scale: 1.05 }}
+                  whileTap={reduce ? undefined : { scale: 0.96 }}
+                  onClick={() => {
+                    setCategory(item.id);
+                    setPage(1);
+                  }}
+                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
+                    active
+                      ? "bg-gradient-to-r from-brand to-brand-secondary text-white shadow-[0_10px_24px_-10px_rgb(0_86_163_/_0.5)]"
+                      : "bg-white text-brand ring-1 ring-brand/15 hover:bg-brand/5"
+                  }`}
+                >
+                  {item.label}
+                </motion.button>
+              );
+            })}
           </div>
-        </div>
+        </Container>
+      </div>
 
-        {/* Category chips */}
-        <div className="mb-8 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {PRODUCT_CATEGORIES.map((item) => {
-            const active = category === item.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  setCategory(item.id);
-                  setPage(1);
-                }}
-                className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
-                  active
-                    ? "bg-brand text-white"
-                    : "bg-white text-brand ring-1 ring-brand/15 hover:bg-brand/5"
-                }`}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-
+      <Container className="relative py-8 lg:py-10">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
           {/* Desktop filters */}
           <aside className="hidden lg:col-span-3 lg:block">
-            <div className="sticky top-24 rounded-[1.5rem] bg-white p-5 shadow-[0_16px_40px_-28px_rgb(0_86_163_/_0.35)] ring-1 ring-brand/10">
+            <div className="sticky top-[calc(4rem+9.5rem)] rounded-[1.5rem] bg-white p-5 shadow-[0_16px_40px_-28px_rgb(0_86_163_/_0.35)] ring-1 ring-brand/10 sm:top-[calc(4.5rem+9.5rem)]">
               <div className="mb-5 flex items-center gap-2">
                 <Filter className="size-4 text-brand" aria-hidden />
                 <h2 className="text-base font-bold text-foreground">Filtros</h2>
@@ -366,7 +383,7 @@ export default function ProductsCatalog() {
           </aside>
 
           {/* Results */}
-          <div id="catalogo-resultados" className="scroll-mt-24 lg:col-span-9">
+          <div id="catalogo-resultados" className="scroll-mt-56 lg:col-span-9">
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-neutral">
                 <span className="font-bold text-foreground">
@@ -421,7 +438,7 @@ export default function ProductsCatalog() {
                       type="button"
                       disabled={currentPage <= 1}
                       onClick={() => goToPage(currentPage - 1)}
-                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 hover:shadow-[0_10px_24px_-14px_rgb(0_86_163_/_0.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-none sm:w-auto"
                     >
                       Anterior
                     </button>
@@ -429,20 +446,22 @@ export default function ProductsCatalog() {
                     <div className="flex flex-wrap items-center justify-center gap-1.5">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                         (n) => (
-                          <button
+                          <motion.button
                             key={n}
                             type="button"
+                            whileHover={reduce ? undefined : { scale: 1.08 }}
+                            whileTap={reduce ? undefined : { scale: 0.94 }}
                             onClick={() => goToPage(n)}
                             aria-label={`Ir a la página ${n}`}
                             aria-current={n === currentPage ? "page" : undefined}
                             className={`flex size-10 items-center justify-center rounded-xl text-sm font-bold transition ${
                               n === currentPage
-                                ? "bg-brand text-white"
+                                ? "bg-gradient-to-r from-brand to-brand-secondary text-white shadow-[0_10px_24px_-10px_rgb(0_86_163_/_0.5)]"
                                 : "bg-white text-brand ring-1 ring-brand/12 hover:bg-brand/5"
                             }`}
                           >
                             {n}
-                          </button>
+                          </motion.button>
                         ),
                       )}
                     </div>
@@ -451,7 +470,7 @@ export default function ProductsCatalog() {
                       type="button"
                       disabled={currentPage >= totalPages}
                       onClick={() => goToPage(currentPage + 1)}
-                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-brand/15 bg-white px-4 text-sm font-semibold text-brand transition hover:bg-brand/5 hover:shadow-[0_10px_24px_-14px_rgb(0_86_163_/_0.4)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:shadow-none sm:w-auto"
                     >
                       Siguiente
                     </button>
@@ -459,8 +478,13 @@ export default function ProductsCatalog() {
                 ) : null}
               </>
             ) : (
-              <div className="flex flex-col items-center justify-center rounded-[1.75rem] bg-white px-6 py-16 text-center ring-1 ring-brand/10">
-                <span className="flex size-14 items-center justify-center rounded-2xl bg-brand/8 text-brand">
+              <motion.div
+                initial={reduce ? false : { opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, ease: [0.32, 0.72, 0, 1] }}
+                className="flex flex-col items-center justify-center rounded-[1.75rem] bg-white px-6 py-16 text-center ring-1 ring-brand/10"
+              >
+                <span className="flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brand to-brand-accent text-white shadow-[0_14px_32px_-14px_rgb(0_86_163_/_0.45)]">
                   <PackageSearch className="size-7" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-lg font-bold text-foreground">
@@ -482,7 +506,7 @@ export default function ProductsCatalog() {
                     Ver todos los productos
                   </button>
                 ) : null}
-              </div>
+              </motion.div>
             )}
           </div>
         </div>
