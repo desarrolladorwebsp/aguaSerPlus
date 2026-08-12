@@ -162,7 +162,7 @@ export default function GoogleReviews() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4 rounded-2xl bg-white px-5 py-4 ring-1 ring-brand/10 shadow-[0_18px_40px_-28px_rgb(0_86_163_/_0.35)]">
+          <div className="flex shrink-0 items-center gap-4 rounded-2xl bg-white px-5 py-4 ring-1 ring-brand/10 shadow-[0_18px_40px_-28px_rgb(0_86_163_/_0.35)]">
             <div>
               <p className="text-4xl font-extrabold tracking-tight text-foreground">
                 {ratingSummary.score}
@@ -179,7 +179,10 @@ export default function GoogleReviews() {
           </div>
         </motion.div>
 
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <ul
+          className="mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 touch-pan-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 xl:grid-cols-3"
+          aria-label="Reseñas de clientes. En móvil, desliza horizontalmente para ver más."
+        >
           {reviews.map((review, index) => (
             <motion.li
               key={review.id}
@@ -191,7 +194,7 @@ export default function GoogleReviews() {
                 delay: reduce ? 0 : index * 0.05,
                 ease: [0.32, 0.72, 0, 1],
               }}
-              className="relative flex h-full flex-col rounded-[1.35rem] bg-white p-5 ring-1 ring-brand/8 shadow-[0_16px_36px_-28px_rgb(12_45_74_/_0.35)]"
+              className="relative flex h-full w-[min(78vw,20.5rem)] shrink-0 snap-start flex-col rounded-[1.35rem] bg-white p-5 ring-1 ring-brand/8 shadow-[0_16px_36px_-28px_rgb(12_45_74_/_0.35)] sm:w-auto sm:min-w-0"
             >
               <Quote
                 className="absolute top-4 right-4 size-7 text-brand/8"
