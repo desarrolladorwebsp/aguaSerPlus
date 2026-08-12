@@ -170,9 +170,9 @@ export default function Hero() {
             variants={fadeUp}
             className="mt-7 text-[2.65rem] font-extrabold leading-[1.05] tracking-[-0.035em] text-white sm:mt-8 sm:text-5xl lg:text-[3.5rem]"
           >
-            Tecnología de agua
+            Tecnologías de
             <span className="mt-1 block text-brand-accent">
-              para tu hogar.
+              agua alcalina.
             </span>
           </motion.h1>
 
