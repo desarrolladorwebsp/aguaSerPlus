@@ -1,18 +1,6 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import Providers from "@/components/shared/Providers";
 import "./globals.css";
-
-const jakarta = Plus_Jakarta_Sans({
-  variable: "--font-jakarta",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Agua Ser Plus | Agua pura a domicilio",
@@ -22,10 +10,40 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="es"
-      className={`${jakarta.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="es" className="h-full antialiased">
+      <head>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `tailwind.config = { theme: { extend: {
+              colors: {
+                brand: { DEFAULT: '#0056a3', secondary: '#0077c8', accent: '#0099dd' },
+                green: { DEFAULT: '#1fa97a', soft: '#e6f7f0' },
+                yellow: { DEFAULT: '#f0b429', soft: '#fff6db' },
+                neutral: '#7a8794',
+                surface: '#f4f8fb',
+                background: '#ffffff',
+                foreground: '#0c2d4a'
+              },
+              fontFamily: { sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+              boxShadow: {
+                soft: '0 18px 50px -24px rgb(0 86 163 / 0.28)',
+                lift: '0 22px 40px -20px rgb(12 45 74 / 0.18)'
+              }
+            } } };`,
+          }}
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="flex w-full min-h-full flex-col font-sans">
         <Providers>{children}</Providers>
       </body>

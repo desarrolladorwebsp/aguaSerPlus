@@ -11,17 +11,21 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import ProductStripCard from "@/components/ui/ProductStripCard";
-import { specialOfferProducts } from "@/lib/products";
 import Container from "@/components/ui/Container";
+import type { ProductOffer } from "@/types/product";
 
 const arrowBtnClass =
   "flex size-11 items-center justify-center rounded-full border border-brand/15 bg-white/95 text-brand shadow-[0_12px_28px_-14px_rgb(12_45_74_/_0.45)] backdrop-blur-sm transition hover:bg-brand hover:text-white hover:border-brand";
 
-export default function SpecialOffers() {
+export default function SpecialOffers({
+  products,
+}: {
+  products: ProductOffer[];
+}) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  if (specialOfferProducts.length === 0) return null;
+  if (products.length === 0) return null;
 
   const scrollByCard = (direction: "prev" | "next") => {
     const node = scrollerRef.current;
@@ -129,7 +133,7 @@ export default function SpecialOffers() {
             ref={scrollerRef}
             className="flex w-full snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-visible py-3 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {specialOfferProducts.map((product, index) => (
+            {products.map((product, index) => (
               <div key={product.id} className="snap-start">
                 <ProductStripCard product={product} index={index} />
               </div>

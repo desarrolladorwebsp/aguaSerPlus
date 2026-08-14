@@ -5,9 +5,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight, Package } from "lucide-react";
 import Link from "next/link";
 import ProductStripCard from "@/components/ui/ProductStripCard";
-import { catalogProducts } from "@/lib/products";
 import Container from "@/components/ui/Container";
-import type { ProductCategory } from "@/types/product";
+import type { ProductOffer } from "@/types/product";
 
 type ProductsStripProps = {
   id?: string;
@@ -17,7 +16,7 @@ type ProductsStripProps = {
   description?: string;
   ctaLabel?: string;
   ctaHref?: string;
-  category?: ProductCategory;
+  items: ProductOffer[];
   tone?: "blue" | "green" | "yellow";
 };
 
@@ -50,7 +49,7 @@ export default function ProductsStrip({
   description = "Desliza para ver el catálogo. Encuentra recargas, dispensadores y más.",
   ctaLabel = "Ver todos los productos",
   ctaHref = "/productos",
-  category,
+  items,
   tone = "blue",
 }: ProductsStripProps) {
   const t = toneStyles[tone];
@@ -58,11 +57,7 @@ export default function ProductsStrip({
   const scrollerRef = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
 
-  const products = catalogProducts.filter((p) => {
-    if (p.inStock === false) return false;
-    if (category && p.category !== category) return false;
-    return true;
-  });
+  const products = items;
 
   const scrollByCard = (direction: "prev" | "next") => {
     const node = scrollerRef.current;

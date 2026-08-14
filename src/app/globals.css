@@ -1,4 +1,4 @@
-@import "tailwindcss";
+/* Tailwind lo aplica el CDN en layout (Turbopack se cuelga con @tailwindcss/postcss). */
 
 /* ─── AguaSer — Azul principal + Verde eco + Amarillo energía ─── */
 :root {
@@ -14,9 +14,8 @@
   --aguaser-background: #ffffff;
   --aguaser-foreground: #0c2d4a;
   --aguaser-page-max: 1400px;
-}
-
-@theme inline {
+  --font-jakarta: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   --color-brand: var(--aguaser-brand);
   --color-brand-secondary: var(--aguaser-brand-secondary);
   --color-brand-accent: var(--aguaser-brand-accent);
@@ -28,12 +27,18 @@
   --color-surface: var(--aguaser-surface);
   --color-background: var(--aguaser-background);
   --color-foreground: var(--aguaser-foreground);
-
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-
   --shadow-soft: 0 18px 50px -24px rgb(0 86 163 / 0.28);
   --shadow-lift: 0 22px 40px -20px rgb(12 45 74 / 0.18);
+}
+
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+
+.shadow-lift {
+  box-shadow: var(--shadow-lift);
 }
 
 /*

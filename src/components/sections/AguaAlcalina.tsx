@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import Container from "@/components/ui/Container";
 import { useCart } from "@/lib/cart/store";
-import { catalogProducts } from "@/lib/products";
 import { formatClp } from "@/types/product";
+import type { ProductOffer } from "@/types/product";
 
 const benefits = [
   {
@@ -40,9 +40,11 @@ const benefits = [
   },
 ] as const;
 
-const alkalineProduct = catalogProducts.find((p) => p.id === "agua-alcalina-20l");
-
-export default function AguaAlcalina() {
+export default function AguaAlcalina({
+  product: alkalineProduct,
+}: {
+  product?: ProductOffer;
+}) {
   const reduce = useReducedMotion();
   const { addItem } = useCart();
 
@@ -164,7 +166,7 @@ export default function AguaAlcalina() {
           >
             <div className="rounded-[2rem] bg-gradient-to-b from-brand-accent/20 via-white/5 to-green/15 p-2 ring-1 ring-white/15">
               <div className="relative overflow-hidden rounded-[1.6rem] bg-[#0a2740]">
-                <div className="relative aspect-[4/5] sm:aspect-square lg:aspect-[5/4]">
+                <div className="relative aspect-square">
                   <div
                     aria-hidden
                     className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,_rgb(0_153_221_/_0.35),_transparent_58%)]"
@@ -183,7 +185,7 @@ export default function AguaAlcalina() {
                       alt="Bidón Agua Alcalina Agua Ser Plus"
                       fill
                       sizes="(max-width: 1024px) 100vw, 45vw"
-                      className="object-contain object-center p-6 sm:p-10"
+                      className="object-cover object-center"
                     />
                   </motion.div>
                 </div>

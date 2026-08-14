@@ -11,6 +11,7 @@ import CartButton from "@/components/cart/CartButton";
 const navLinks = [
   { href: "/", label: "Inicio", match: "home" },
   { href: "/productos", label: "Productos", match: "productos" },
+  { href: "/agua-alcalina", label: "Agua Alcalina", match: "alcalina" },
   { href: "/nuestra-planta", label: "Nuestra Planta", match: "planta" },
   { href: "/#ayuda", label: "Contactos", match: "contactos" },
 ] as const;
@@ -110,6 +111,9 @@ export default function Header() {
   const isActive = (match: (typeof navLinks)[number]["match"]) => {
     if (match === "productos") {
       return pathname === "/productos" || pathname.startsWith("/productos/");
+    }
+    if (match === "alcalina") {
+      return pathname === "/agua-alcalina";
     }
     if (match === "planta") {
       return pathname === "/nuestra-planta";

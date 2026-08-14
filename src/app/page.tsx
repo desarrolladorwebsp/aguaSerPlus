@@ -7,15 +7,32 @@ import RecargaBidones from "@/components/sections/RecargaBidones";
 import AguaAlcalina from "@/components/sections/AguaAlcalina";
 import ContactHelp from "@/components/sections/ContactHelp";
 import GoogleReviews from "@/components/sections/GoogleReviews";
+import { catalogProducts, specialOfferProducts } from "@/lib/products";
+
+const HOME_STRIP_LIMIT = 12;
+
+function inStockByCategory(category: "dispensadores" | "accesorios") {
+  return catalogProducts
+    .filter((p) => p.inStock !== false && p.category === category)
+    .slice(0, HOME_STRIP_LIMIT);
+}
 
 export default function Home() {
+  const offers = specialOfferProducts.slice(0, HOME_STRIP_LIMIT);
+  const catalogPreview = catalogProducts
+    .filter((p) => p.inStock !== false)
+    .slice(0, HOME_STRIP_LIMIT);
+  const alkalineProduct = catalogProducts.find(
+    (p) => p.id === "agua-alcalina-20l",
+  );
+
   return (
     <>
       <Header />
       <main className="w-full flex-1">
         <Hero />
-        <SpecialOffers />
-        <ProductsStrip tone="blue" />
+        <SpecialOffers products={offers} />
+        <ProductsStrip tone="blue" items={catalogPreview} />
         <RecargaBidones />
         <ProductsStrip
           id="dispensadores"
@@ -25,10 +42,10 @@ export default function Home() {
           description="Elige el modelo ideal para tu hogar u oficina. Frío, calor y pedestal."
           ctaLabel="Ver más dispensadores"
           ctaHref="/productos?categoria=dispensadores"
-          category="dispensadores"
+          items={inStockByCategory("dispensadores")}
           tone="green"
         />
-        <AguaAlcalina />
+        <AguaAlcalina product={alkalineProduct} />
         <ProductsStrip
           id="accesorios"
           headingId="accesorios-strip-heading"
@@ -37,7 +54,7 @@ export default function Home() {
           description="Bombas, llaves, bases y más para complementar tu dispensador."
           ctaLabel="Ver más accesorios"
           ctaHref="/productos?categoria=accesorios"
-          category="accesorios"
+          items={inStockByCategory("accesorios")}
           tone="yellow"
         />
         <ContactHelp />
