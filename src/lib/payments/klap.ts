@@ -123,14 +123,26 @@ export async function createKlapOrder(
     };
   }
 
-  const res = await fetch(ordersUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Apikey: apiKey,
-    },
-    body: JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch(ordersUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Apikey: apiKey,
+      },
+      body: JSON.stringify(body),
+    });
+  } catch (error) {
+    console.error("Klap create order network error", {
+      ordersUrl,
+      apiKeyConfigured: Boolean(apiKey),
+      error,
+    });
+    throw new Error(
+      "No se pudo conectar con Klap desde el servidor. Revisa la URL de Klap, la API key y la conectividad de producción.",
+    );
+  }
 
   const text = await res.text();
   let json: KlapOrderResponse & KlapErrorBody;
