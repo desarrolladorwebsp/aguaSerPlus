@@ -9,8 +9,6 @@ import type {
 export type CheckoutRequestBody = {
   items: Array<{ productId: string; qty: number }>;
   customer: CartCustomer;
-  /** Si true, el sandbox redirige a /checkout/error */
-  simulateFailure?: boolean;
 };
 
 export function validateAndPriceItems(

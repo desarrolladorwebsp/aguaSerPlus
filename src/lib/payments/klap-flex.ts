@@ -3,7 +3,9 @@
  */
 
 const DEFAULT_SCRIPT =
-  "https://sandbox.mcdesaqa.cl/pagos/checkout-flex/v1/main.min.js";
+  process.env.NODE_ENV === "production"
+    ? "https://mcdesaqa.cl/pagos/checkout-flex/v1/main.min.js"
+    : "https://sandbox.mcdesaqa.cl/pagos/checkout-flex/v1/main.min.js";
 
 declare global {
   interface Window {

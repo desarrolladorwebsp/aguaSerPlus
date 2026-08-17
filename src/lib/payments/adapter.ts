@@ -36,19 +36,28 @@ const klapAdapter: PaymentAdapter = {
 
 /**
  * Punto único para elegir la pasarela.
+ * En producción se usa Klap real. El sandbox queda solo para desarrollo local.
  */
 export function getPaymentAdapter(): PaymentAdapter {
-  const provider = (process.env.PAYMENT_PROVIDER ?? "sandbox").toLowerCase();
+  const configured = process.env.PAYMENT_PROVIDER?.trim().toLowerCase();
+  const provider =
+    configured ??
+    (process.env.NODE_ENV === "production" ? "klap" : "sandbox");
 
   switch (provider) {
     case "klap":
       return klapAdapter;
+    case "sandbox":
+      return sandboxAdapter;
     case "mercadopago":
     case "webpay":
-      // Aún no implementados — cae a sandbox para no romper el flujo.
-      return sandboxAdapter;
+      throw new Error(
+        `Proveedor de pago no soportado en este entorno: ${provider}. Usa "klap" o "sandbox".`,
+      );
     default:
-      return sandboxAdapter;
+      throw new Error(
+        `Proveedor de pago no configurado o inválido: ${provider ?? "(vacío)"}.`,
+      );
   }
 }
 

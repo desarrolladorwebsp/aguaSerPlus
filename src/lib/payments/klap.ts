@@ -22,6 +22,12 @@ function requireEnv(name: string) {
   return value;
 }
 
+function getDefaultKlapOrdersUrl() {
+  return process.env.NODE_ENV === "production"
+    ? "https://api-pasarela.mcdesaqa.cl/payment-gateway/v1/orders"
+    : "https://api-pasarela-sandbox.mcdesaqa.cl/payment-gateway/v1/orders";
+}
+
 function isPublicHttpUrl(url: string) {
   try {
     const parsed = new URL(url);
@@ -73,8 +79,7 @@ export async function createKlapOrder(
 
   const apiKey = requireEnv("KLAP_API_KEY");
   const ordersUrl =
-    process.env.KLAP_ORDERS_URL?.trim() ||
-    "https://api-pasarela-sandbox.mcdesaqa.cl/payment-gateway/v1/orders";
+    process.env.KLAP_ORDERS_URL?.trim() || getDefaultKlapOrdersUrl();
 
   const origin = input.origin.replace(/\/$/, "");
   const webhookBase = resolveWebhookBase(origin);

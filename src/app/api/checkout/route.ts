@@ -40,39 +40,6 @@ export async function POST(request: Request) {
   const orderId = createOrderId();
   const origin = new URL(request.url).origin;
 
-  if (body.simulateFailure) {
-    const params = new URLSearchParams({
-      orderId,
-      amount: String(priced.amount),
-      reason: "Pago simulado rechazado",
-    });
-
-    try {
-      await createOrderInDb(
-        buildAdminOrderFromCheckout({
-          orderId,
-          amount: priced.amount,
-          items: priced.items,
-          customer: customerResult.customer,
-          paymentProvider: "sandbox",
-          status: "cancelled",
-        }),
-      );
-    } catch (error) {
-      console.error("persist cancelled sandbox order", error);
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: {
-        orderId,
-        amount: priced.amount,
-        redirectUrl: `${origin}/checkout/error?${params.toString()}`,
-        provider: "sandbox",
-      },
-    });
-  }
-
   try {
     const payment = await createPayment({
       orderId,

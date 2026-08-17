@@ -35,7 +35,6 @@ export default function CheckoutPageClient() {
   const [address, setAddress] = useState("");
   const [commune, setCommune] = useState("Maipú");
   const [notes, setNotes] = useState("");
-  const [simulateFailure, setSimulateFailure] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
 
@@ -69,7 +68,6 @@ export default function CheckoutPageClient() {
               fulfillment === "delivery" ? commune : company.address.commune,
             notes: notes.trim() || undefined,
           },
-          simulateFailure,
         }),
       });
 
@@ -336,21 +334,6 @@ export default function CheckoutPageClient() {
                       : "Horario aproximado de retiro u otra indicación"
                   }
                 />
-              </label>
-
-              <label className="flex cursor-pointer items-center gap-2 rounded-xl bg-yellow-soft/60 px-3 py-3 text-sm text-foreground ring-1 ring-yellow/30">
-                <input
-                  type="checkbox"
-                  checked={simulateFailure}
-                  onChange={(e) => setSimulateFailure(e.target.checked)}
-                  className="size-4 accent-brand"
-                />
-                <span>
-                  Simular pago rechazado{" "}
-                  <span className="text-neutral">
-                    (solo sandbox interno, no Klap)
-                  </span>
-                </span>
               </label>
 
               {errors.form ? (
