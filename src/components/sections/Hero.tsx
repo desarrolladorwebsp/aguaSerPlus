@@ -64,28 +64,28 @@ const benefits = [
 
 const showcaseProducts = [
   {
-    id: "premium",
-    name: "Premium con grifo",
-    tag: "Filtro Premium",
-    image: "/products/product-premium-negro-rosegold.png",
+    id: "purificador-01",
+    name: "Purificador de agua",
+    tag: "Modelo 01",
+    image: "/products/purificador-de-agua/purificado-de-agua-01.png",
   },
   {
-    id: "ultra-ice",
-    name: "Ultra Ice",
-    tag: "Purificador",
-    image: "/products/product-ultra-ice-negro.png",
+    id: "purificador-02",
+    name: "Purificador de agua",
+    tag: "Modelo 02",
+    image: "/products/purificador-de-agua/purificado-de-agua-02.png",
   },
   {
-    id: "easy",
-    name: "EASY purificador",
-    tag: "Filtro compacto",
-    image: "/products/product-easy-negro.png",
+    id: "purificador-03",
+    name: "Purificador de agua",
+    tag: "Modelo 03",
+    image: "/products/purificador-de-agua/purificado-de-agua-03.png",
   },
   {
-    id: "colors",
-    name: "COLORS con grifo",
-    tag: "Filtro de diseño",
-    image: "/products/product-colors-azul.png",
+    id: "purificador-04",
+    name: "Purificador de agua",
+    tag: "Modelo 04",
+    image: "/products/purificador-de-agua/purificado-de-agua-04.png",
   },
 ] as const;
 
@@ -282,7 +282,7 @@ export default function Hero() {
               initial={reduce ? false : { opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6, ease }}
-              className="absolute right-4 top-4 z-10 sm:right-5 sm:top-5"
+              className="absolute bottom-4 left-4 z-10 sm:bottom-5 sm:left-5"
             >
               <div className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-[0_14px_32px_-14px_rgb(0_0_0_/_0.4)] ring-1 ring-black/5 sm:px-4 sm:py-3">
                 <div className="flex text-yellow">
