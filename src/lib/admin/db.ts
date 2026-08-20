@@ -1,6 +1,19 @@
 import { getSql } from "@/lib/neon";
-import type { AdminProduct, AdminProductStatus } from "@/lib/admin/types";
+import type {
+  AdminCategory,
+  AdminProduct,
+  AdminProductStatus,
+} from "@/lib/admin/types";
+import { seedCategories } from "@/lib/admin/mock-data";
 import type { ProductColorOption, ProductSpec } from "@/types/product";
+
+type CategoryRow = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  updated_at: string;
+};
 
 type ProductRow = {
   id: string;
@@ -46,6 +59,15 @@ function parseJsonArray<T>(value: unknown): T[] {
   return [];
 }
 
+function mapCategoryRow(row: CategoryRow): AdminCategory {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description ?? "",
+  };
+}
+
 function mapRow(row: ProductRow): AdminProduct {
   return {
     id: row.id,
@@ -65,6 +87,7 @@ function mapRow(row: ProductRow): AdminProduct {
 }
 
 let schemaReady: Promise<void> | null = null;
+let categorySchemaReady: Promise<void> | null = null;
 
 export async function ensureProductSchema() {
   if (!schemaReady) {
@@ -95,6 +118,113 @@ export async function ensureProductSchema() {
     });
   }
   await schemaReady;
+}
+
+export async function ensureCategorySchema() {
+  if (!categorySchemaReady) {
+    categorySchemaReady = (async () => {
+      const sql = getSql();
+      await sql`
+        CREATE TABLE IF NOT EXISTS categories (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          slug TEXT NOT NULL UNIQUE,
+          description TEXT,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+      `;
+      await sql`CREATE UNIQUE INDEX IF NOT EXISTS categories_slug_idx ON categories (slug)`;
+    })().catch((error) => {
+      categorySchemaReady = null;
+      throw error;
+    });
+  }
+  await categorySchemaReady;
+}
+
+export async function listCategoriesFromDb(): Promise<AdminCategory[]> {
+  await ensureCategorySchema();
+  await seedDefaultCategoriesIfEmpty();
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT id, name, slug, description, updated_at
+    FROM categories
+    ORDER BY name ASC, updated_at DESC
+  `) as CategoryRow[];
+  return rows.map(mapCategoryRow);
+}
+
+export async function createCategoryInDb(
+  input: Omit<AdminCategory, "id">,
+): Promise<AdminCategory> {
+  await ensureCategorySchema();
+  const sql = getSql();
+  const id = `cat-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+  const rows = (await sql`
+    INSERT INTO categories (id, name, slug, description, updated_at)
+    VALUES (${id}, ${input.name.trim()}, ${input.slug.trim()}, ${input.description.trim()}, NOW())
+    RETURNING id, name, slug, description, updated_at
+  `) as CategoryRow[];
+  return mapCategoryRow(rows[0]);
+}
+
+export async function seedDefaultCategoriesIfEmpty() {
+  await ensureCategorySchema();
+  const sql = getSql();
+  const countRows = (await sql`SELECT COUNT(*)::int AS count FROM categories`) as Array<{
+    count: number;
+  }>;
+  if ((countRows[0]?.count ?? 0) > 0) return;
+
+  for (const category of seedCategories) {
+    await sql`
+      INSERT INTO categories (id, name, slug, description, updated_at)
+      VALUES (
+        ${category.id},
+        ${category.name},
+        ${category.slug},
+        ${category.description},
+        NOW()
+      )
+      ON CONFLICT (id) DO NOTHING
+    `;
+  }
+}
+
+export async function updateCategoryInDb(
+  id: string,
+  patch: Partial<AdminCategory>,
+): Promise<AdminCategory> {
+  await ensureCategorySchema();
+  const sql = getSql();
+  const rows = (await sql`
+    UPDATE categories
+    SET
+      name = ${patch.name?.trim() ?? ""},
+      slug = ${patch.slug?.trim() ?? ""},
+      description = ${patch.description?.trim() ?? ""},
+      updated_at = NOW()
+    WHERE id = ${id}
+    RETURNING id, name, slug, description, updated_at
+  `) as CategoryRow[];
+  if (!rows[0]) {
+    throw new Error("Categoría no encontrada.");
+  }
+  return mapCategoryRow(rows[0]);
+}
+
+export async function deleteCategoryInDb(id: string): Promise<void> {
+  await ensureCategorySchema();
+  const sql = getSql();
+  const linkedProducts = (await sql`
+    SELECT COUNT(*)::int AS count
+    FROM products
+    WHERE category_id = ${id}
+  `) as Array<{ count: number }>;
+  if ((linkedProducts[0]?.count ?? 0) > 0) {
+    throw new Error("No se puede eliminar una categoría con productos asociados.");
+  }
+  await sql`DELETE FROM categories WHERE id = ${id}`;
 }
 
 export async function listProductsFromDb(): Promise<AdminProduct[]> {

@@ -9,7 +9,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { seedCategories } from "@/lib/admin/mock-data";
 import type {
   AdminCategory,
   AdminOrder,
@@ -36,9 +35,9 @@ type AdminStoreValue = {
     patch: Partial<AdminProduct>,
   ) => Promise<AdminProduct | null>;
   deleteProduct: (id: string) => Promise<boolean>;
-  createCategory: (input: Omit<AdminCategory, "id">) => AdminCategory;
-  updateCategory: (id: string, patch: Partial<AdminCategory>) => void;
-  deleteCategory: (id: string) => boolean;
+  createCategory: (input: Omit<AdminCategory, "id">) => Promise<AdminCategory>;
+  updateCategory: (id: string, patch: Partial<AdminCategory>) => Promise<AdminCategory>;
+  deleteCategory: (id: string) => Promise<boolean>;
   updateOrder: (
     id: string,
     patch: Partial<AdminOrder>,
@@ -48,19 +47,31 @@ type AdminStoreValue = {
 
 const AdminStoreContext = createContext<AdminStoreValue | null>(null);
 
-function newId(prefix: string) {
-  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
-}
-
 export function AdminStoreProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [productsError, setProductsError] = useState<string | null>(null);
-  const [categories, setCategories] =
-    useState<AdminCategory[]>(seedCategories);
+  const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [ordersLoading, setOrdersLoading] = useState(true);
   const [ordersError, setOrdersError] = useState<string | null>(null);
+
+  const refreshCategories = useCallback(async () => {
+    try {
+      const res = await fetch("/api/admin/categories");
+      const json = (await res.json()) as {
+        success?: boolean;
+        data?: AdminCategory[];
+        error?: string;
+      };
+      if (!res.ok || !json.success || !json.data) {
+        throw new Error(json.error || "No se pudieron cargar las categorías.");
+      }
+      setCategories(json.data);
+    } catch (error) {
+      console.error("refresh categories error", error);
+    }
+  }, []);
 
   const refreshProducts = useCallback(async () => {
     setProductsLoading(true);
@@ -113,9 +124,10 @@ export function AdminStoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    void refreshCategories();
     void refreshProducts();
     void refreshOrders();
-  }, [refreshProducts, refreshOrders]);
+  }, [refreshCategories, refreshProducts, refreshOrders]);
 
   const productCountByCategory = useMemo(() => {
     const map: Record<string, number> = {};
@@ -187,19 +199,55 @@ export function AdminStoreProvider({ children }: { children: ReactNode }) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
       return true;
     },
-    createCategory: (input) => {
-      const category: AdminCategory = { ...input, id: newId("cat") };
-      setCategories((prev) => [...prev, category]);
-      return category;
+    createCategory: async (input) => {
+      const res = await fetch("/api/admin/categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        data?: AdminCategory;
+        error?: string;
+      };
+      if (!res.ok || !json.success || !json.data) {
+        throw new Error(json.error || "No se pudo crear la categoría.");
+      }
+      setCategories((prev) => [...prev, json.data!]);
+      return json.data;
     },
-    updateCategory: (id, patch) => {
+    updateCategory: async (id, patch) => {
+      const res = await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch),
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        data?: AdminCategory;
+        error?: string;
+      };
+      if (!res.ok || !json.success || !json.data) {
+        throw new Error(json.error || "No se pudo actualizar la categoría.");
+      }
       setCategories((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...patch, id: c.id } : c)),
+        prev.map((c) => (c.id === id ? json.data! : c)),
       );
+      return json.data;
     },
-    deleteCategory: (id) => {
+    deleteCategory: async (id) => {
       const linked = products.some((p) => p.categoryId === id);
       if (linked) return false;
+      const res = await fetch(`/api/admin/categories/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        error?: string;
+      };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || "No se pudo eliminar la categoría.");
+      }
       setCategories((prev) => prev.filter((c) => c.id !== id));
       return true;
     },
