@@ -68,10 +68,13 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   );
 
   const related = getRelatedProducts(product, 4);
+  const visibleCharacteristics = (product.characteristics ?? []).filter(
+    (item) => item?.label?.trim() && item?.value?.trim(),
+  );
   const hasDiscount =
     product.priceNow > 0 && product.priceBefore > product.priceNow;
   const hasCatalogDetail = Boolean(
-    product.characteristics?.length ||
+    visibleCharacteristics.length ||
       product.features?.length ||
       product.specs?.length ||
       product.colors?.length,
@@ -237,6 +240,27 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               </p>
             </div>
 
+            {visibleCharacteristics.length ? (
+              <div className="mt-4 rounded-2xl border border-brand/10 bg-surface/60 p-4">
+                <h2 className="text-sm font-bold text-foreground">Características</h2>
+                <ul className="mt-3 space-y-2">
+                  {visibleCharacteristics.map((item) => (
+                    <li
+                      key={item.label}
+                      className="flex flex-wrap items-start justify-between gap-2 rounded-xl bg-white/80 px-3 py-2"
+                    >
+                      <span className="text-sm font-semibold text-foreground">
+                        {item.label}
+                      </span>
+                      <span className="text-sm text-neutral">
+                        {item.value}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
             {product.colors?.length ? (
               <div className="mt-5">
                 <h2 className="text-sm font-bold text-foreground">
@@ -344,7 +368,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
         {/* Catalog-style detail blocks */}
         {hasCatalogDetail ? (
           <div className="mt-12 grid gap-5 lg:grid-cols-12 lg:gap-6">
-            {product.characteristics?.length ? (
+            {visibleCharacteristics.length ? (
               <div className="rounded-[1.5rem] bg-white p-6 ring-1 ring-brand/10 lg:col-span-5">
                 <p className="text-xs font-bold tracking-[0.16em] text-brand-accent uppercase">
                   Ficha técnica
@@ -353,7 +377,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                   Características
                 </h2>
                 <ul className="mt-5 space-y-3">
-                  {product.characteristics.map((item) => (
+                  {visibleCharacteristics.map((item) => (
                     <li
                       key={item.label}
                       className="flex items-start justify-between gap-4 border-b border-brand/8 pb-3 text-sm last:border-0 last:pb-0"

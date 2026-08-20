@@ -1,6 +1,5 @@
 import { getSql } from "@/lib/neon";
 import type { AdminProduct, AdminProductStatus } from "@/lib/admin/types";
-import { seedProducts } from "@/lib/admin/mock-data";
 import type { ProductColorOption, ProductSpec } from "@/types/product";
 
 type ProductRow = {
@@ -109,84 +108,6 @@ export async function listProductsFromDb(): Promise<AdminProduct[]> {
     ORDER BY updated_at DESC
   `) as ProductRow[];
   return rows.map(mapRow);
-}
-
-export async function seedProductsIfEmpty() {
-  await ensureProductSchema();
-  const sql = getSql();
-  const countRows = (await sql`SELECT COUNT(*)::int AS count FROM products`) as Array<{
-    count: number;
-  }>;
-  if ((countRows[0]?.count ?? 0) > 0) return;
-
-  for (const product of seedProducts) {
-    await sql`
-      INSERT INTO products (
-        id, title, sku, price_normal, price_sale, stock,
-        category_id, images, status, description, characteristics, colors, updated_at
-      ) VALUES (
-        ${product.id},
-        ${product.title},
-        ${product.sku},
-        ${product.priceNormal},
-        ${product.priceSale},
-        ${product.stock},
-        ${product.categoryId},
-        ${JSON.stringify(product.images)},
-        ${product.status},
-        ${product.description ?? null},
-        ${JSON.stringify(product.characteristics ?? [])},
-        ${JSON.stringify(product.colors ?? [])},
-        ${product.updatedAt}
-      )
-      ON CONFLICT (id) DO NOTHING
-    `;
-  }
-}
-
-export async function syncCatalogProductsToDb() {
-  await ensureProductSchema();
-  const sql = getSql();
-
-  await sql`DELETE FROM products`;
-
-  for (const product of seedProducts) {
-    await sql`
-      INSERT INTO products (
-        id, title, sku, price_normal, price_sale, stock,
-        category_id, images, status, description, characteristics, colors, updated_at
-      ) VALUES (
-        ${product.id},
-        ${product.title},
-        ${product.sku},
-        ${product.priceNormal},
-        ${product.priceSale},
-        ${product.stock},
-        ${product.categoryId},
-        ${JSON.stringify(product.images)},
-        ${product.status},
-        ${product.description ?? null},
-        ${JSON.stringify(product.characteristics ?? [])},
-        ${JSON.stringify(product.colors ?? [])},
-        ${product.updatedAt}
-      )
-      ON CONFLICT (id) DO UPDATE SET
-        title = EXCLUDED.title,
-        sku = EXCLUDED.sku,
-        price_normal = EXCLUDED.price_normal,
-        price_sale = EXCLUDED.price_sale,
-        stock = EXCLUDED.stock,
-        category_id = EXCLUDED.category_id,
-        images = EXCLUDED.images,
-        status = EXCLUDED.status,
-        description = EXCLUDED.description,
-        characteristics = EXCLUDED.characteristics,
-        colors = EXCLUDED.colors,
-        updated_at = EXCLUDED.updated_at
-    `;
-  }
-
-  return listProductsFromDb();
 }
 
 export async function createProductInDb(

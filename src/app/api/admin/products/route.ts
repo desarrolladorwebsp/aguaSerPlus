@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import {
   createProductInDb,
   listProductsFromDb,
-  seedProductsIfEmpty,
 } from "@/lib/admin/db";
 import { isAdminAuthenticated, unauthorized } from "@/lib/admin/session";
 import type { AdminProduct } from "@/lib/admin/types";
@@ -15,7 +14,6 @@ export async function GET() {
   if (!(await isAdminAuthenticated())) return unauthorized();
 
   try {
-    await seedProductsIfEmpty();
     const products = await listProductsFromDb();
     return NextResponse.json({ success: true, data: products });
   } catch (error) {

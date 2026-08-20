@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listProductsFromDb, seedProductsIfEmpty } from "@/lib/admin/db";
+import { listProductsFromDb } from "@/lib/admin/db";
 import type { AdminProduct } from "@/lib/admin/types";
 
 function toPublicProduct(product: AdminProduct) {
@@ -26,7 +26,6 @@ function toPublicProduct(product: AdminProduct) {
 
 export async function GET() {
   try {
-    await seedProductsIfEmpty();
     const products = await listProductsFromDb();
     return NextResponse.json({
       success: true,
