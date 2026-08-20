@@ -35,10 +35,15 @@ export default function CartLineItem({ item, compact = false }: CartLineItemProp
             <p className="mt-0.5 text-sm font-semibold text-brand">
               {formatClp(item.price)}
             </p>
+            {item.color ? (
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-neutral">
+                Color: {item.color}
+              </p>
+            ) : null}
           </div>
           <button
             type="button"
-            onClick={() => removeItem(item.productId)}
+            onClick={() => removeItem(item.productId, item.color)}
             className="flex size-8 shrink-0 items-center justify-center rounded-lg text-neutral transition hover:bg-white hover:text-brand"
             aria-label={`Quitar ${item.name}`}
           >
@@ -50,7 +55,7 @@ export default function CartLineItem({ item, compact = false }: CartLineItemProp
           <div className="inline-flex items-center rounded-xl bg-white ring-1 ring-brand/10">
             <button
               type="button"
-              onClick={() => setQty(item.productId, item.qty - 1)}
+              onClick={() => setQty(item.productId, item.qty - 1, item.color)}
               aria-label="Disminuir cantidad"
               className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5 disabled:opacity-40"
               disabled={item.qty <= 1}
@@ -62,7 +67,7 @@ export default function CartLineItem({ item, compact = false }: CartLineItemProp
             </span>
             <button
               type="button"
-              onClick={() => setQty(item.productId, item.qty + 1)}
+              onClick={() => setQty(item.productId, item.qty + 1, item.color)}
               aria-label="Aumentar cantidad"
               className="flex size-8 items-center justify-center text-brand transition hover:bg-brand/5 disabled:opacity-40"
               disabled={item.qty >= 99}

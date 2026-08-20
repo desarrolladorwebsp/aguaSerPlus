@@ -63,6 +63,9 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
       product.colors?.[0]?.name ??
       null,
   );
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    product.colors?.length === 1 ? product.colors[0]?.name ?? null : null,
+  );
 
   const related = getRelatedProducts(product, 4);
   const hasDiscount =
@@ -75,12 +78,17 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
   );
 
   const handleAdd = () => {
+    if (product.colors?.length && product.colors.length > 1 && !selectedColor) {
+      return;
+    }
+
     addItem({
       productId: product.id,
       name: product.name,
       image: activeImage || product.image,
       price: product.priceNow,
       qty,
+      color: selectedColor ?? product.colors?.[0]?.name ?? undefined,
     });
     setJustAdded(true);
     window.setTimeout(() => setJustAdded(false), 1400);
@@ -88,6 +96,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
 
   const selectColor = (name: string, image?: string) => {
     setActiveColor(name);
+    setSelectedColor(name);
     if (image) setActiveImage(image);
   };
 
@@ -243,20 +252,51 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                           onClick={() => selectColor(color.name, color.image)}
                           aria-label={color.name}
                           aria-pressed={selected}
+                          className={`group flex items-center justify-center rounded-full p-1 transition ${
+                            selected ? "bg-brand/10 shadow-sm" : "bg-transparent"
+                          }`}
                         >
-                          <span className="relative flex size-12 rounded-full ring-1 ring-black/10 sm:size-14">
+                          <span
+                            className={`relative flex size-12 rounded-full border bg-white/80 shadow-[0_0_0_1px_rgba(0,0,0,0.06)] transition sm:size-14 ${
+                              selected ? "border-brand ring-2 ring-brand/20" : "border-brand/10"
+                            }`}
+                          >
                             <span
-                              className="absolute inset-0 rounded-full"
+                              className="absolute inset-[2px] rounded-full"
                               style={{ backgroundColor: color.swatch }}
                               aria-hidden
                             />
-                            <span className="absolute inset-0 rounded-full border border-white/60" />
+                            <span className="absolute inset-[2px] rounded-full border border-white/70" />
                           </span>
                         </button>
                       </li>
                     );
                   })}
                 </ul>
+
+                {product.colors.length > 1 ? (
+                  <div className="mt-3 rounded-2xl border border-brand/10 bg-white p-3">
+                    <label
+                      htmlFor="color-select"
+                      className="mb-2 block text-xs font-semibold uppercase tracking-wide text-neutral"
+                    >
+                      Elige el color para agregar al carro
+                    </label>
+                    <select
+                      id="color-select"
+                      value={selectedColor ?? ""}
+                      onChange={(event) => setSelectedColor(event.target.value || null)}
+                      className="w-full rounded-xl border border-brand/10 bg-surface px-3 py-2 text-sm font-semibold text-foreground outline-none ring-0"
+                    >
+                      <option value="">Selecciona un color</option>
+                      {product.colors.map((color) => (
+                        <option key={color.name} value={color.name}>
+                          {color.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
               </div>
             ) : null}
 
@@ -287,7 +327,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
               <button
                 type="button"
                 onClick={handleAdd}
-                disabled={product.inStock === false}
+                disabled={product.inStock === false || (product.colors?.length ? product.colors.length > 1 && !selectedColor : false)}
                 className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-sm font-bold transition disabled:opacity-50 ${
                   justAdded
                     ? "bg-green text-white"

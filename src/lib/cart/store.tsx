@@ -25,8 +25,8 @@ type CartContextValue = {
   closeCart: () => void;
   toggleCart: () => void;
   addItem: (item: AddItemInput, options?: { open?: boolean }) => void;
-  removeItem: (productId: string) => void;
-  setQty: (productId: string, qty: number) => void;
+  removeItem: (productId: string, color?: string) => void;
+  setQty: (productId: string, qty: number, color?: string) => void;
   clear: () => void;
   totalItems: number;
   subtotal: number;
@@ -138,13 +138,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     (item: AddItemInput, options?: { open?: boolean }) => {
       const qtyToAdd = Math.min(99, Math.max(1, item.qty ?? 1));
       const prev = getSnapshot().items;
-      const existing = prev.find((p) => p.productId === item.productId);
+      const itemKey = item.color ? `${item.productId}:${item.color}` : item.productId;
+      const existing = prev.find((p) => {
+        const existingKey = p.color ? `${p.productId}:${p.color}` : p.productId;
+        return existingKey === itemKey;
+      });
       const next = existing
-        ? prev.map((p) =>
-            p.productId === item.productId
+        ? prev.map((p) => {
+            const existingKey = p.color ? `${p.productId}:${p.color}` : p.productId;
+            return existingKey === itemKey
               ? { ...p, qty: Math.min(99, p.qty + qtyToAdd) }
-              : p,
-          )
+              : p;
+          })
         : [
             ...prev,
             {
@@ -153,6 +158,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
               image: item.image,
               price: item.price,
               qty: qtyToAdd,
+              color: item.color,
             },
           ];
       writeItems(next);
@@ -166,19 +172,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const removeItem = useCallback((productId: string) => {
-    writeItems(getSnapshot().items.filter((p) => p.productId !== productId));
+  const removeItem = useCallback((productId: string, color?: string) => {
+    const targetKey = color ? `${productId}:${color}` : productId;
+    writeItems(
+      getSnapshot().items.filter((p) => {
+        const itemKey = p.color ? `${p.productId}:${p.color}` : p.productId;
+        return itemKey !== targetKey;
+      }),
+    );
   }, []);
 
-  const setQty = useCallback((productId: string, qty: number) => {
+  const setQty = useCallback((productId: string, qty: number, color?: string) => {
     const nextQty = Math.min(99, Math.max(0, Math.floor(qty)));
     const prev = getSnapshot().items;
+    const targetKey = color ? `${productId}:${color}` : productId;
     writeItems(
       nextQty <= 0
-        ? prev.filter((p) => p.productId !== productId)
-        : prev.map((p) =>
-            p.productId === productId ? { ...p, qty: nextQty } : p,
-          ),
+        ? prev.filter((p) => {
+            const itemKey = p.color ? `${p.productId}:${p.color}` : p.productId;
+            return itemKey !== targetKey;
+          })
+        : prev.map((p) => {
+            const itemKey = p.color ? `${p.productId}:${p.color}` : p.productId;
+            return itemKey === targetKey ? { ...p, qty: nextQty } : p;
+          }),
     );
   }, []);
 
