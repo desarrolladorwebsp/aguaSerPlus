@@ -148,7 +148,7 @@ export default function RecargaBidones() {
             Cada compra o recarga de bidones también transforma vidas: el{" "}
             <span className="font-bold text-brand">15%</span> se destina a la{" "}
             <span className="font-semibold text-foreground">
-              Fundación Vendedor de Sueños
+              El Vendedor de Sueños
             </span>
             , para ayudar a las familias más necesitadas de Chile.
           </p>
@@ -184,7 +184,7 @@ export default function RecargaBidones() {
               <p className="mt-1 text-sm leading-snug text-white/90">
                 de tu compra apoya a la{" "}
                 <span className="font-semibold text-white">
-                  Fundación Vendedor de Sueños
+                  El Vendedor de Sueños
                 </span>
               </p>
             </div>
@@ -299,7 +299,7 @@ export default function RecargaBidones() {
               <div className="leading-tight">
                 <p className="text-sm font-extrabold">Fundación</p>
                 <p className="text-[11px] text-foreground/75">
-                  Vendedor de Sueños
+                  El Vendedor de Sueños
                 </p>
               </div>
             </motion.div>
