@@ -8,6 +8,7 @@ import {
 } from "@/lib/checkout";
 import { createOrderInDb } from "@/lib/admin/orders-db";
 import { buildAdminOrderFromCheckout } from "@/lib/admin/order-from-checkout";
+import { getSql } from "@/lib/neon";
 
 export async function POST(request: Request) {
   let body: CheckoutRequestBody;
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const priced = validateAndPriceItems(body.items ?? []);
+  const priced = await validateAndPriceItems(body.items ?? []);
   if ("error" in priced) {
     return NextResponse.json(
       { success: false, error: priced.error },
@@ -49,18 +50,36 @@ export async function POST(request: Request) {
       origin,
     });
 
-    await createOrderInDb(
-      buildAdminOrderFromCheckout({
-        orderId,
-        amount: priced.amount,
-        items: priced.items,
-        customer: customerResult.customer,
-        paymentProvider: payment.provider,
-        externalPaymentId: payment.klapOrderId ?? payment.paymentId,
-        // Sandbox “paga” al instante; Klap queda pending hasta webhook
-        status: payment.provider === "sandbox" ? "processing" : "pending",
-      }),
-    );
+    const order = buildAdminOrderFromCheckout({
+      orderId,
+      amount: priced.amount,
+      items: priced.items,
+      customer: customerResult.customer,
+      paymentProvider: payment.provider,
+      externalPaymentId: payment.klapOrderId ?? payment.paymentId,
+      // Sandbox “paga” al instante; Klap queda pending hasta webhook
+      status: payment.provider === "sandbox" ? "processing" : "pending",
+    });
+
+    await createOrderInDb(order);
+
+    const sql = getSql();
+    for (const item of order.items) {
+      const productRows = (await sql`
+        SELECT id, stock
+        FROM products
+        WHERE id = ${item.productId}
+        LIMIT 1
+      `) as Array<{ id: string; stock: number }>;
+      const current = productRows[0];
+      if (!current) continue;
+      const nextStock = Math.max(0, Number(current.stock) - item.qty);
+      await sql`
+        UPDATE products
+        SET stock = ${nextStock}, updated_at = NOW()
+        WHERE id = ${item.productId}
+      `;
+    }
 
     return NextResponse.json({
       success: true,

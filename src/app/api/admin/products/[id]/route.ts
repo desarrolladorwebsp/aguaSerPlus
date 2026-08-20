@@ -43,6 +43,25 @@ export async function PUT(request: Request, context: RouteContext) {
         : undefined,
       status: body.status,
       description: body.description,
+      characteristics: Array.isArray(body.characteristics)
+        ? body.characteristics
+            .filter((item) => Boolean(item?.label && item?.value))
+            .map((item) => ({
+              label: String(item?.label ?? ""),
+              value: String(item?.value ?? ""),
+            }))
+            .filter((item) => Boolean(item.label && item.value))
+        : undefined,
+      colors: Array.isArray(body.colors)
+        ? body.colors
+            .filter((item) => Boolean(item?.name))
+            .map((item) => ({
+              name: String(item?.name ?? ""),
+              codes: String(item?.codes ?? ""),
+              swatch: String(item?.swatch ?? item?.codes ?? "#4f46e5"),
+            }))
+            .filter((item) => Boolean(item.name))
+        : undefined,
     });
 
     if (!updated) {

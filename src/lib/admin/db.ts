@@ -1,6 +1,7 @@
 import { getSql } from "@/lib/neon";
 import type { AdminProduct, AdminProductStatus } from "@/lib/admin/types";
 import { seedProducts } from "@/lib/admin/mock-data";
+import type { ProductColorOption, ProductSpec } from "@/types/product";
 
 type ProductRow = {
   id: string;
@@ -13,6 +14,8 @@ type ProductRow = {
   images: string[] | string;
   status: string;
   description: string | null;
+  characteristics: unknown;
+  colors: unknown;
   updated_at: string;
 };
 
@@ -31,6 +34,19 @@ function parseImages(value: ProductRow["images"]): string[] {
   return [];
 }
 
+function parseJsonArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (Array.isArray(parsed)) return parsed as T[];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+}
+
 function mapRow(row: ProductRow): AdminProduct {
   return {
     id: row.id,
@@ -43,6 +59,8 @@ function mapRow(row: ProductRow): AdminProduct {
     images: parseImages(row.images),
     status: (row.status === "inactive" ? "inactive" : "active") as AdminProductStatus,
     description: row.description ?? undefined,
+    characteristics: parseJsonArray<ProductSpec>(row.characteristics),
+    colors: parseJsonArray<ProductColorOption>(row.colors),
     updatedAt: row.updated_at,
   };
 }
@@ -65,9 +83,13 @@ export async function ensureProductSchema() {
           images JSONB NOT NULL DEFAULT '[]'::jsonb,
           status TEXT NOT NULL DEFAULT 'active',
           description TEXT,
+          characteristics JSONB NOT NULL DEFAULT '[]'::jsonb,
+          colors JSONB NOT NULL DEFAULT '[]'::jsonb,
           updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `;
+      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics JSONB NOT NULL DEFAULT '[]'::jsonb`;
+      await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS colors JSONB NOT NULL DEFAULT '[]'::jsonb`;
     })().catch((error) => {
       schemaReady = null;
       throw error;
@@ -82,7 +104,7 @@ export async function listProductsFromDb(): Promise<AdminProduct[]> {
   const rows = (await sql`
     SELECT
       id, title, sku, price_normal, price_sale, stock,
-      category_id, images, status, description, updated_at
+      category_id, images, status, description, characteristics, colors, updated_at
     FROM products
     ORDER BY updated_at DESC
   `) as ProductRow[];
@@ -101,7 +123,7 @@ export async function seedProductsIfEmpty() {
     await sql`
       INSERT INTO products (
         id, title, sku, price_normal, price_sale, stock,
-        category_id, images, status, description, updated_at
+        category_id, images, status, description, characteristics, colors, updated_at
       ) VALUES (
         ${product.id},
         ${product.title},
@@ -113,6 +135,8 @@ export async function seedProductsIfEmpty() {
         ${JSON.stringify(product.images)},
         ${product.status},
         ${product.description ?? null},
+        ${JSON.stringify(product.characteristics ?? [])},
+        ${JSON.stringify(product.colors ?? [])},
         ${product.updatedAt}
       )
       ON CONFLICT (id) DO NOTHING
@@ -130,7 +154,7 @@ export async function syncCatalogProductsToDb() {
     await sql`
       INSERT INTO products (
         id, title, sku, price_normal, price_sale, stock,
-        category_id, images, status, description, updated_at
+        category_id, images, status, description, characteristics, colors, updated_at
       ) VALUES (
         ${product.id},
         ${product.title},
@@ -142,6 +166,8 @@ export async function syncCatalogProductsToDb() {
         ${JSON.stringify(product.images)},
         ${product.status},
         ${product.description ?? null},
+        ${JSON.stringify(product.characteristics ?? [])},
+        ${JSON.stringify(product.colors ?? [])},
         ${product.updatedAt}
       )
       ON CONFLICT (id) DO UPDATE SET
@@ -154,6 +180,8 @@ export async function syncCatalogProductsToDb() {
         images = EXCLUDED.images,
         status = EXCLUDED.status,
         description = EXCLUDED.description,
+        characteristics = EXCLUDED.characteristics,
+        colors = EXCLUDED.colors,
         updated_at = EXCLUDED.updated_at
     `;
   }
@@ -169,7 +197,7 @@ export async function createProductInDb(
   const rows = (await sql`
     INSERT INTO products (
       id, title, sku, price_normal, price_sale, stock,
-      category_id, images, status, description, updated_at
+      category_id, images, status, description, characteristics, colors, updated_at
     ) VALUES (
       ${product.id},
       ${product.title},
@@ -181,11 +209,13 @@ export async function createProductInDb(
       ${JSON.stringify(product.images)},
       ${product.status},
       ${product.description ?? null},
+      ${JSON.stringify(product.characteristics ?? [])},
+      ${JSON.stringify(product.colors ?? [])},
       ${product.updatedAt}
     )
     RETURNING
       id, title, sku, price_normal, price_sale, stock,
-      category_id, images, status, description, updated_at
+      category_id, images, status, description, characteristics, colors, updated_at
   `) as ProductRow[];
   return mapRow(rows[0]);
 }
@@ -199,7 +229,7 @@ export async function updateProductInDb(
   const existingRows = (await sql`
     SELECT
       id, title, sku, price_normal, price_sale, stock,
-      category_id, images, status, description, updated_at
+      category_id, images, status, description, characteristics, colors, updated_at
     FROM products
     WHERE id = ${id}
     LIMIT 1
@@ -226,11 +256,13 @@ export async function updateProductInDb(
       images = ${JSON.stringify(next.images)},
       status = ${next.status},
       description = ${next.description ?? null},
+      characteristics = ${JSON.stringify(next.characteristics ?? [])},
+      colors = ${JSON.stringify(next.colors ?? [])},
       updated_at = ${next.updatedAt}
     WHERE id = ${id}
     RETURNING
       id, title, sku, price_normal, price_sale, stock,
-      category_id, images, status, description, updated_at
+      category_id, images, status, description, characteristics, colors, updated_at
   `) as ProductRow[];
 
   return mapRow(rows[0]);

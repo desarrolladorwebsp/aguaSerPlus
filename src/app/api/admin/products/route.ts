@@ -62,6 +62,25 @@ export async function POST(request: Request) {
       : [],
     status: body.status === "inactive" ? "inactive" : "active",
     description: body.description?.trim() || undefined,
+    characteristics: Array.isArray(body.characteristics)
+      ? body.characteristics
+          .filter((item) => Boolean(item?.label && item?.value))
+          .map((item) => ({
+            label: String(item?.label ?? ""),
+            value: String(item?.value ?? ""),
+          }))
+          .filter((item) => Boolean(item.label && item.value))
+      : [],
+    colors: Array.isArray(body.colors)
+      ? body.colors
+          .filter((item) => Boolean(item?.name))
+          .map((item) => ({
+            name: String(item?.name ?? ""),
+            codes: String(item?.codes ?? ""),
+            swatch: String(item?.swatch ?? item?.codes ?? "#4f46e5"),
+          }))
+          .filter((item) => Boolean(item.name))
+      : [],
     updatedAt: new Date().toISOString(),
   };
 

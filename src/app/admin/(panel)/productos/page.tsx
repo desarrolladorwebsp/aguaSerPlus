@@ -19,6 +19,7 @@ import type {
   AdminProduct,
   AdminProductStatus,
 } from "@/lib/admin/types";
+import type { ProductColorOption, ProductSpec } from "@/types/product";
 import {
   PRODUCT_STATUS_LABELS,
   adminProductHasDiscount,
@@ -48,6 +49,8 @@ type Draft = {
   images: [string, string, string];
   status: AdminProductStatus;
   description: string;
+  characteristicsText: string;
+  colorsText: string;
 };
 
 const emptyDraft = (categoryId: string): Draft => ({
@@ -60,6 +63,8 @@ const emptyDraft = (categoryId: string): Draft => ({
   images: ["", "", ""],
   status: "active",
   description: "",
+  characteristicsText: "",
+  colorsText: "",
 });
 
 function toImageSlots(images: string[]): [string, string, string] {
@@ -73,6 +78,47 @@ function normalizeImages(images: string[]): string[] {
 
 function isBlobMedia(src: string) {
   return src.startsWith("/api/media/");
+}
+
+function parseCharacteristics(text: string): ProductSpec[] {
+  return text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const separatorIndex = line.indexOf(":");
+      if (separatorIndex <= 0) return null;
+      const label = line.slice(0, separatorIndex).trim();
+      const value = line.slice(separatorIndex + 1).trim();
+      return label && value ? { label, value } : null;
+    })
+    .filter((item): item is ProductSpec => Boolean(item));
+}
+
+function parseColors(text: string): ProductColorOption[] {
+  return text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const parts = line.split("|").map((part) => part.trim());
+      const [name, codes, swatch] = parts;
+      if (!name) return null;
+      return {
+        name,
+        codes: codes ?? "",
+        swatch: swatch ?? codes ?? "#4f46e5",
+      };
+    })
+    .filter((item): item is ProductColorOption => Boolean(item));
+}
+
+function formatCharacteristics(items?: ProductSpec[]): string {
+  return (items ?? []).map((item) => `${item.label}: ${item.value}`).join("\n");
+}
+
+function formatColors(items?: ProductColorOption[]): string {
+  return (items ?? []).map((item) => `${item.name}|${item.codes}|${item.swatch}`).join("\n");
 }
 
 export default function AdminProductsPage() {
@@ -174,6 +220,8 @@ export default function AdminProductsPage() {
       images: toImageSlots(product.images),
       status: product.status,
       description: product.description ?? "",
+      characteristicsText: formatCharacteristics(product.characteristics),
+      colorsText: formatColors(product.colors),
     });
     setModal("edit");
   };
@@ -199,6 +247,8 @@ export default function AdminProductsPage() {
       images: normalizeImages(draft.images),
       status: draft.status,
       description: draft.description.trim() || undefined,
+      characteristics: parseCharacteristics(draft.characteristicsText),
+      colors: parseColors(draft.colorsText),
     };
     if (!payload.title || !payload.sku) return;
 
@@ -531,6 +581,22 @@ export default function AdminProductsPage() {
               />
               {selected.description ? (
                 <Detail label="Descripción" value={selected.description} />
+              ) : null}
+              {selected.characteristics?.length ? (
+                <Detail
+                  label="Características"
+                  value={selected.characteristics
+                    .map((item) => `${item.label}: ${item.value}`)
+                    .join(" · ")}
+                />
+              ) : null}
+              {selected.colors?.length ? (
+                <Detail
+                  label="Colores"
+                  value={selected.colors
+                    .map((color) => `${color.name} (${color.codes || color.swatch})`)
+                    .join(", ")}
+                />
               ) : null}
             </dl>
             <button
@@ -919,6 +985,30 @@ function ProductForm({
         {uploadError ? (
           <p className="mt-2 text-sm text-red-600">{uploadError}</p>
         ) : null}
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="Características (una por línea: Etiqueta: Valor)">
+          <textarea
+            rows={4}
+            className={textareaClass}
+            value={draft.characteristicsText}
+            onChange={(e) =>
+              onChange({ ...draft, characteristicsText: e.target.value })
+            }
+            placeholder="Capacidad: 20 L/h"
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
+        <Field label="Colores (una por línea: Nombre|Código|Color)">
+          <textarea
+            rows={4}
+            className={textareaClass}
+            value={draft.colorsText}
+            onChange={(e) => onChange({ ...draft, colorsText: e.target.value })}
+            placeholder="Negro|NEG-01|#111111"
+          />
+        </Field>
       </div>
       <div className="sm:col-span-2">
         <Field label="Descripción">

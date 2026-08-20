@@ -1,4 +1,4 @@
-import { catalogProducts } from "@/lib/products";
+import { getCatalogProducts } from "@/lib/products";
 import { company } from "@/lib/company";
 import type {
   CartCustomer,
@@ -11,15 +11,16 @@ export type CheckoutRequestBody = {
   customer: CartCustomer;
 };
 
-export function validateAndPriceItems(
+export async function validateAndPriceItems(
   rawItems: Array<{ productId: string; qty: number }>,
-): { items: CheckoutOrderItem[]; amount: number } | { error: string } {
+): Promise<{ items: CheckoutOrderItem[]; amount: number } | { error: string }> {
   if (!Array.isArray(rawItems) || rawItems.length === 0) {
     return { error: "El carro está vacío." };
   }
 
   const items: CheckoutOrderItem[] = [];
   let amount = 0;
+  const catalogProducts = await getCatalogProducts();
 
   for (const raw of rawItems) {
     if (!raw?.productId || typeof raw.qty !== "number") {

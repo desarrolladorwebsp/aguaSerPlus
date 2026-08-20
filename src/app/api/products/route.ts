@@ -19,6 +19,8 @@ function toPublicProduct(product: AdminProduct) {
     categoryId: product.categoryId,
     images: product.images,
     status: product.status,
+    characteristics: product.characteristics ?? [],
+    colors: product.colors ?? [],
   };
 }
 

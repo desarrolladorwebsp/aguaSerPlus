@@ -1,3 +1,5 @@
+import type { ProductColorOption, ProductSpec } from "@/types/product";
+
 export type AdminProductStatus = "active" | "inactive";
 
 export type AdminProduct = {
@@ -14,6 +16,8 @@ export type AdminProduct = {
   images: string[];
   status: AdminProductStatus;
   description?: string;
+  characteristics?: ProductSpec[];
+  colors?: ProductColorOption[];
   updatedAt: string;
 };
 

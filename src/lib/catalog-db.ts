@@ -1,5 +1,5 @@
 import { getSql } from "@/lib/neon";
-import type { ProductCategory, ProductOffer } from "@/types/product";
+import type { ProductCategory, ProductColorOption, ProductOffer, ProductSpec } from "@/types/product";
 
 type ProductRow = {
   id: string;
@@ -12,6 +12,8 @@ type ProductRow = {
   images: string[] | string;
   status: string;
   description: string | null;
+  characteristics: unknown;
+  colors: unknown;
   updated_at: string;
 };
 
@@ -38,6 +40,19 @@ function parseImages(value: ProductRow["images"]): string[] {
       }
     } catch {
       if (value.trim()) return [value.trim()];
+    }
+  }
+  return [];
+}
+
+function parseJsonArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) return value as T[];
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value) as unknown;
+      if (Array.isArray(parsed)) return parsed as T[];
+    } catch {
+      return [];
     }
   }
   return [];
@@ -87,6 +102,8 @@ function mapRow(row: ProductRow): ProductOffer {
     inStock: isActive,
     featured: false,
     tags: [],
+    characteristics: parseJsonArray<ProductSpec>(row.characteristics),
+    colors: parseJsonArray<ProductColorOption>(row.colors),
   };
 }
 
@@ -104,9 +121,13 @@ async function ensureProductSchema() {
       images JSONB NOT NULL DEFAULT '[]'::jsonb,
       status TEXT NOT NULL DEFAULT 'active',
       description TEXT,
+      characteristics JSONB NOT NULL DEFAULT '[]'::jsonb,
+      colors JSONB NOT NULL DEFAULT '[]'::jsonb,
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS characteristics JSONB NOT NULL DEFAULT '[]'::jsonb`;
+  await sql`ALTER TABLE products ADD COLUMN IF NOT EXISTS colors JSONB NOT NULL DEFAULT '[]'::jsonb`;
 }
 
 export async function getProductsFromDb(): Promise<ProductOffer[]> {
@@ -116,7 +137,7 @@ export async function getProductsFromDb(): Promise<ProductOffer[]> {
     const rows = (await sql`
       SELECT
         id, title, sku, price_normal, price_sale, stock,
-        category_id, images, status, description, updated_at
+        category_id, images, status, description, characteristics, colors, updated_at
       FROM products
       WHERE status != 'inactive'
       ORDER BY updated_at DESC
