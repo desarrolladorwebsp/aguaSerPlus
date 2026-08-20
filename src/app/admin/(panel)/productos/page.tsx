@@ -39,6 +39,26 @@ const PAGE_SIZE = 8;
 const MAX_IMAGES = 3;
 const FALLBACK_IMAGE = "/products/hero-jug-splash.png";
 
+const COLOR_PALETTE = [
+  { name: "Azul", value: "#2563eb" },
+  { name: "Turquesa", value: "#14b8a6" },
+  { name: "Verde", value: "#16a34a" },
+  { name: "Amarillo", value: "#facc15" },
+  { name: "Naranja", value: "#f97316" },
+  { name: "Rojo", value: "#dc2626" },
+  { name: "Rosa", value: "#ec4899" },
+  { name: "Morado", value: "#7c3aed" },
+  { name: "Negro", value: "#111111" },
+  { name: "Blanco", value: "#f8fafc" },
+  { name: "Gris", value: "#64748b" },
+  { name: "Café", value: "#92400e" },
+] as const;
+
+type ColorDraft = {
+  id: string;
+  swatch: string;
+};
+
 type Draft = {
   title: string;
   sku: string;
@@ -50,8 +70,15 @@ type Draft = {
   status: AdminProductStatus;
   description: string;
   characteristicsText: string;
-  colorsText: string;
+  colors: ColorDraft[];
 };
+
+function createColorDraft(swatch = "#4f46e5") {
+  return {
+    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+    swatch,
+  } as ColorDraft;
+}
 
 const emptyDraft = (categoryId: string): Draft => ({
   title: "",
@@ -64,7 +91,7 @@ const emptyDraft = (categoryId: string): Draft => ({
   status: "active",
   description: "",
   characteristicsText: "",
-  colorsText: "",
+  colors: [createColorDraft()],
 });
 
 function toImageSlots(images: string[]): [string, string, string] {
@@ -95,30 +122,8 @@ function parseCharacteristics(text: string): ProductSpec[] {
     .filter((item): item is ProductSpec => Boolean(item));
 }
 
-function parseColors(text: string): ProductColorOption[] {
-  return text
-    .split(/\n+/)
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const parts = line.split("|").map((part) => part.trim());
-      const [name, codes, swatch] = parts;
-      if (!name) return null;
-      return {
-        name,
-        codes: codes ?? "",
-        swatch: swatch ?? codes ?? "#4f46e5",
-      };
-    })
-    .filter((item): item is ProductColorOption => Boolean(item));
-}
-
 function formatCharacteristics(items?: ProductSpec[]): string {
   return (items ?? []).map((item) => `${item.label}: ${item.value}`).join("\n");
-}
-
-function formatColors(items?: ProductColorOption[]): string {
-  return (items ?? []).map((item) => `${item.name}|${item.codes}|${item.swatch}`).join("\n");
 }
 
 export default function AdminProductsPage() {
@@ -221,7 +226,10 @@ export default function AdminProductsPage() {
       status: product.status,
       description: product.description ?? "",
       characteristicsText: formatCharacteristics(product.characteristics),
-      colorsText: formatColors(product.colors),
+      colors: (product.colors ?? []).map((color) => ({
+        id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
+        swatch: color.swatch || "#4f46e5",
+      })),
     });
     setModal("edit");
   };
@@ -248,7 +256,19 @@ export default function AdminProductsPage() {
       status: draft.status,
       description: draft.description.trim() || undefined,
       characteristics: parseCharacteristics(draft.characteristicsText),
-      colors: parseColors(draft.colorsText),
+      colors: draft.colors
+        .filter((color) => Boolean(color.swatch))
+        .map((color, index) => {
+          const colorName =
+            COLOR_PALETTE.find((paletteColor) => paletteColor.value === color.swatch)?.name ??
+            `Color ${index + 1}`;
+
+          return {
+            name: colorName,
+            codes: color.swatch,
+            swatch: color.swatch,
+          };
+        }),
     };
     if (!payload.title || !payload.sku) return;
 
@@ -987,6 +1007,18 @@ function ProductForm({
         ) : null}
       </div>
       <div className="sm:col-span-2">
+        <Field label="Descripción">
+          <textarea
+            rows={3}
+            className={textareaClass}
+            value={draft.description}
+            onChange={(e) =>
+              onChange({ ...draft, description: e.target.value })
+            }
+          />
+        </Field>
+      </div>
+      <div className="sm:col-span-2">
         <Field label="Características (una por línea: Etiqueta: Valor)">
           <textarea
             rows={4}
@@ -1000,27 +1032,90 @@ function ProductForm({
         </Field>
       </div>
       <div className="sm:col-span-2">
-        <Field label="Colores (una por línea: Nombre|Código|Color)">
-          <textarea
-            rows={4}
-            className={textareaClass}
-            value={draft.colorsText}
-            onChange={(e) => onChange({ ...draft, colorsText: e.target.value })}
-            placeholder="Negro|NEG-01|#111111"
-          />
-        </Field>
-      </div>
-      <div className="sm:col-span-2">
-        <Field label="Descripción">
-          <textarea
-            rows={3}
-            className={textareaClass}
-            value={draft.description}
-            onChange={(e) =>
-              onChange({ ...draft, description: e.target.value })
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className="text-sm font-semibold text-foreground">
+            Colores
+          </span>
+          <button
+            type="button"
+            onClick={() =>
+              onChange({
+                ...draft,
+                colors: [...draft.colors, createColorDraft()],
+              })
             }
-          />
-        </Field>
+            className="inline-flex items-center gap-1 text-sm font-semibold text-brand hover:underline"
+          >
+            <Plus className="size-3.5" aria-hidden />
+            Agregar color
+          </button>
+        </div>
+        <div className="space-y-3">
+          {draft.colors.map((color, index) => (
+            <div
+              key={color.id}
+              className="rounded-xl border border-brand/10 bg-surface/40 p-3"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-sm font-semibold text-foreground">
+                  {`Color ${index + 1}`}
+                </span>
+                {draft.colors.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onChange({
+                        ...draft,
+                        colors: draft.colors.filter((item) => item.id !== color.id),
+                      })
+                    }
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:underline"
+                  >
+                    <X className="size-3.5" aria-hidden />
+                    Quitar
+                  </button>
+                ) : null}
+              </div>
+
+              <div className="mt-3 rounded-lg border border-brand/10 bg-white p-2.5">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral">
+                  Selecciona un color
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {COLOR_PALETTE.map((paletteColor) => {
+                    const selected = color.swatch === paletteColor.value;
+                    return (
+                      <button
+                        key={paletteColor.value}
+                        type="button"
+                        onClick={() => {
+                          const nextColors = [...draft.colors];
+                          nextColors[index] = {
+                            ...nextColors[index],
+                            swatch: paletteColor.value,
+                          };
+                          onChange({ ...draft, colors: nextColors });
+                        }}
+                        className={`flex items-center gap-2 rounded-full border px-2.5 py-1.5 text-xs font-semibold transition ${
+                          selected
+                            ? "border-brand bg-brand/8 text-brand"
+                            : "border-brand/10 bg-white text-foreground hover:border-brand/25"
+                        }`}
+                      >
+                        <span
+                          className="size-4 rounded-full border border-black/10"
+                          style={{ backgroundColor: paletteColor.value }}
+                          aria-hidden
+                        />
+                        {paletteColor.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
       {error ? (
         <p className="sm:col-span-2 text-sm text-red-600">{error}</p>

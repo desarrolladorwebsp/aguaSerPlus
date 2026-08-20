@@ -32,6 +32,8 @@ export type ProductColorOption = {
   codes: string;
   /** Hex or Tailwind-friendly swatch color */
   swatch: string;
+  /** Optional secondary color for split swatches */
+  swatchSecondary?: string;
   image?: string;
 };
 

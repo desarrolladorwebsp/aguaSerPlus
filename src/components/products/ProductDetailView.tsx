@@ -233,7 +233,7 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                 <h2 className="text-sm font-bold text-foreground">
                   Colores disponibles
                 </h2>
-                <ul className="mt-3 grid gap-2.5 sm:grid-cols-3">
+                <ul className="mt-3 grid gap-2.5 sm:grid-cols-4 xl:grid-cols-5">
                   {product.colors.map((color) => {
                     const selected = activeColor === color.name;
                     return (
@@ -241,24 +241,16 @@ export default function ProductDetailView({ product }: ProductDetailViewProps) {
                         <button
                           type="button"
                           onClick={() => selectColor(color.name, color.image)}
-                          className={`flex w-full flex-col gap-2 rounded-xl bg-white p-3 text-left transition ${
-                            selected
-                              ? "ring-2 ring-brand"
-                              : "ring-1 ring-brand/10 hover:ring-brand/25"
-                          }`}
+                          aria-label={color.name}
+                          aria-pressed={selected}
                         >
-                          <span className="flex items-center gap-2">
+                          <span className="relative flex size-12 rounded-full ring-1 ring-black/10 sm:size-14">
                             <span
-                              className="size-5 rounded-full ring-1 ring-black/10"
+                              className="absolute inset-0 rounded-full"
                               style={{ backgroundColor: color.swatch }}
                               aria-hidden
                             />
-                            <span className="text-sm font-bold text-foreground">
-                              {color.name}
-                            </span>
-                          </span>
-                          <span className="text-[11px] leading-snug text-neutral">
-                            {color.codes}
+                            <span className="absolute inset-0 rounded-full border border-white/60" />
                           </span>
                         </button>
                       </li>
