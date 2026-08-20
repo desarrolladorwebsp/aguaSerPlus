@@ -120,6 +120,47 @@ export async function seedProductsIfEmpty() {
   }
 }
 
+export async function syncCatalogProductsToDb() {
+  await ensureProductSchema();
+  const sql = getSql();
+
+  await sql`DELETE FROM products`;
+
+  for (const product of seedProducts) {
+    await sql`
+      INSERT INTO products (
+        id, title, sku, price_normal, price_sale, stock,
+        category_id, images, status, description, updated_at
+      ) VALUES (
+        ${product.id},
+        ${product.title},
+        ${product.sku},
+        ${product.priceNormal},
+        ${product.priceSale},
+        ${product.stock},
+        ${product.categoryId},
+        ${JSON.stringify(product.images)},
+        ${product.status},
+        ${product.description ?? null},
+        ${product.updatedAt}
+      )
+      ON CONFLICT (id) DO UPDATE SET
+        title = EXCLUDED.title,
+        sku = EXCLUDED.sku,
+        price_normal = EXCLUDED.price_normal,
+        price_sale = EXCLUDED.price_sale,
+        stock = EXCLUDED.stock,
+        category_id = EXCLUDED.category_id,
+        images = EXCLUDED.images,
+        status = EXCLUDED.status,
+        description = EXCLUDED.description,
+        updated_at = EXCLUDED.updated_at
+    `;
+  }
+
+  return listProductsFromDb();
+}
+
 export async function createProductInDb(
   product: AdminProduct,
 ): Promise<AdminProduct> {

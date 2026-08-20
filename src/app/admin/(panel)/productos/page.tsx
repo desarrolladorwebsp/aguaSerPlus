@@ -81,6 +81,7 @@ export default function AdminProductsPage() {
     productsLoading,
     productsError,
     categories,
+    refreshProducts,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -99,6 +100,7 @@ export default function AdminProductsPage() {
   const [draft, setDraft] = useState<Draft>(emptyDraft(categories[0]?.id ?? ""));
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [syncingCatalog, setSyncingCatalog] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
   const categoryName = (id: string) =>
@@ -130,6 +132,33 @@ export default function AdminProductsPage() {
     setFormError(null);
     setDraft(emptyDraft(categories[0]?.id ?? "recargas"));
     setModal("create");
+  };
+
+  const syncCatalog = async () => {
+    setSyncingCatalog(true);
+    setFormError(null);
+    try {
+      const res = await fetch("/api/admin/products/sync", {
+        method: "POST",
+      });
+      const json = (await res.json()) as {
+        success?: boolean;
+        error?: string;
+        count?: number;
+      };
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || "No se pudo sincronizar el catálogo.");
+      }
+      await refreshProducts();
+    } catch (error) {
+      setFormError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo sincronizar el catálogo.",
+      );
+    } finally {
+      setSyncingCatalog(false);
+    }
   };
 
   const openEdit = (product: AdminProduct) => {
@@ -207,14 +236,31 @@ export default function AdminProductsPage() {
             {filtered.length} resultado{filtered.length === 1 ? "" : "s"}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreate}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-secondary"
-        >
-          <Plus className="size-4" aria-hidden />
-          Agregar producto
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={syncCatalog}
+            disabled={syncingCatalog}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-brand/15 bg-white px-4 text-sm font-bold text-brand transition hover:bg-brand/5 disabled:opacity-60"
+          >
+            {syncingCatalog ? (
+              <>
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+                Sincronizando…
+              </>
+            ) : (
+              "Sincronizar catálogo"
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-brand px-4 text-sm font-bold text-white transition hover:bg-brand-secondary"
+          >
+            <Plus className="size-4" aria-hidden />
+            Agregar producto
+          </button>
+        </div>
       </header>
 
       <div className="flex flex-col gap-3 rounded-2xl bg-white p-4 ring-1 ring-brand/10 sm:flex-row sm:items-center">

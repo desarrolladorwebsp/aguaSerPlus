@@ -1,6 +1,7 @@
 import type { ProductOffer } from "@/types/product";
 import { PRODUCT_CATEGORIES } from "@/types/product";
 import { acquabiosExtraProducts } from "@/lib/catalog-acquabios-extra";
+import { getProductsFromDb } from "@/lib/catalog-db";
 
 /**
  * Catálogo importado desde WooCommerce (solo datos útiles).
@@ -1201,6 +1202,53 @@ export const catalogProducts: ProductOffer[] = [
     ],
   },
   {
+    id: "acquabios-grifo-pared-colors",
+    name: "Filtro con Grifo Colors Pared",
+    brand: "Acquabios",
+    subtitle: "Accionamiento 1/4 de vuelta — instalación de pared",
+    description:
+      "La línea Colors es el filtro con grifo favorito de los brasileños. Máxima eficacia en la reducción de cloro, olor y mal sabor. Práctico, fácil de instalar y de sustituir el cartucho. Recomendado para instalación en el fregadero, directamente en el punto de agua. Apto para uso residencial o en establecimientos comerciales con consumo medio de agua.",
+    priceBefore: 0,
+    priceNow: 0,
+    badge: "Popular",
+    badgeTone: "green",
+    note: "Instalación de pared",
+    image: "/products/grifos/grifo-pared-01.jpg",
+    images: [
+      "/products/grifos/grifo-pared-01.jpg",
+      "/products/grifos/grifo-pared-02.jpg",
+      "/products/grifos/grifo-pared-03.jpg",
+    ],
+    tint: "blue",
+    category: "filtracion",
+    featured: true,
+    inStock: true,
+    tags: [
+      { label: "De pared", icon: "table" },
+      { label: "Colors", icon: "metal" },
+      { label: "1/4 vuelta", icon: "bolt" },
+    ],
+    characteristics: [
+      { label: "Flujo de agua", value: "40 litros por hora" },
+      { label: "Retención de partículas", value: "≥15 a <30 μm" },
+      { label: "Vida útil del cartucho", value: "1.500 litros" },
+      {
+        label: "Reducción de cloro, olor y mal sabor",
+        value: "Sí",
+      },
+      { label: "Instalación", value: "De pared" },
+      { label: "Accionamiento", value: "1/4 de vuelta" },
+    ],
+    features: [
+      "Diseño práctico para instalación en el fregadero",
+      "Máxima reducción de cloro, olor y mal sabor",
+      "Accionamiento de 1/4 de vuelta",
+      "Retención de partículas de ≥15 a <30 μm",
+      "Cartucho con vida útil de 1.500 litros",
+      "Ideal para uso residencial o comercial medio",
+    ],
+  },
+  {
     id: "acquabios-colors",
     name: "COLORS Filtro con Grifo de Pared Acquabios",
     brand: "Acquabios",
@@ -1326,6 +1374,105 @@ export const catalogProducts: ProductOffer[] = [
       "Reduce cloro, olor y mal sabor",
       "Alta eficiencia en retención de partículas",
       "Carcasas opcionales rojo y negro",
+    ],
+  },
+  {
+    id: "acquabios-grifo-mesa-cocina",
+    name: "Grifo de Mesa para Cocina",
+    brand: "Acquabios",
+    subtitle: "Grifería para encimera — abre fácil 1/4 de vuelta",
+    description:
+      "¡Más color para tu entorno! Para uso en encimera, elige el grifo que mejor se adapte a tu cocina y dale un toque distinto a la experiencia diaria. Diseño funcional con instalación de mesa y un uso cómodo en cada apertura.",
+    priceBefore: 0,
+    priceNow: 0,
+    badge: "Nuevo",
+    badgeTone: "green",
+    note: "Instalación de mesa",
+    image: "/products/grifos/grifo-de-mesa-para-cocina.jpg",
+    images: [
+      "/products/grifos/grifo-de-mesa-para-cocina.jpg",
+    ],
+    tint: "blue",
+    category: "accesorios",
+    featured: true,
+    inStock: true,
+    tags: [
+      { label: "Para cocina", icon: "table" },
+      { label: "Instalación de mesa", icon: "design" },
+      { label: "Abre fácil", icon: "bolt" },
+    ],
+    characteristics: [
+      { label: "Uso", value: "Encimera / cocina" },
+      { label: "Instalación", value: "De mesa" },
+      {
+        label: "Apertura",
+        value: "1/4 de vuelta",
+      },
+      {
+        label: "Llave",
+        value: "Ergonómica",
+      },
+      {
+        label: "Diseño",
+        value: "Funcional y moderno",
+      },
+    ],
+    features: [
+      "Llave ergonómica",
+      "Abre fácil 1/4 de vuelta",
+      "Ideal para encimera de cocina",
+      "Instalación rápida y práctica",
+      "Diseño funcional para uso diario",
+    ],
+  },
+  {
+    id: "acquabios-grifo-bano-nuevo",
+    name: "Grifo de Mesa para Baño",
+    brand: "Acquabios",
+    subtitle: "Grifería para lavamanos — abre fácil 1/4 de vuelta",
+    description:
+      "Los baños también siguen las tendencias. ¡El modelo ideal que estás buscando está aquí! Elija el que mejor se adapte a su ambiente. Diseño funcional, elegante y pensado para instalaciones de mesa con uso cotidiano y comodidad en cada apertura.",
+    priceBefore: 0,
+    priceNow: 0,
+    badge: "Nuevo",
+    badgeTone: "green",
+    note: "Instalación de mesa",
+    image: "/products/grifos/grifo-de-mesa-para-baño-01.jpg",
+    images: [
+      "/products/grifos/grifo-de-mesa-para-baño-01.jpg",
+      "/products/grifos/grifo-de-mesa-para-baño-02.jpg",
+    ],
+    tint: "blue",
+    category: "accesorios",
+    featured: true,
+    inStock: true,
+    tags: [
+      { label: "Para baño", icon: "table" },
+      { label: "Instalación de mesa", icon: "design" },
+      { label: "Abre fácil", icon: "bolt" },
+    ],
+    characteristics: [
+      { label: "Uso", value: "Baño / lavamanos" },
+      { label: "Instalación", value: "De mesa" },
+      {
+        label: "Apertura",
+        value: "1/4 de vuelta",
+      },
+      {
+        label: "Llave",
+        value: "Ergonómica",
+      },
+      {
+        label: "Diseño",
+        value: "Elegante y moderno",
+      },
+    ],
+    features: [
+      "Llave ergonómica",
+      "Abre fácil 1/4 de vuelta",
+      "Ideal para lavamanos y ambientes modernos",
+      "Instalación de mesa práctica",
+      "Diseño que combina estilo y uso diario",
     ],
   },
   {
@@ -2244,8 +2391,17 @@ export const catalogProducts: ProductOffer[] = [
 
 export const specialOfferProducts = catalogProducts.filter((p) => p.featured);
 
-export function getProductById(id: string): ProductOffer | undefined {
-  return catalogProducts.find((p) => p.id === id);
+export async function getCatalogProducts(): Promise<ProductOffer[]> {
+  const dbProducts = await getProductsFromDb();
+  if (dbProducts.length > 0) {
+    return dbProducts;
+  }
+  return catalogProducts;
+}
+
+export async function getProductById(id: string): Promise<ProductOffer | undefined> {
+  const products = await getCatalogProducts();
+  return products.find((p) => p.id === id);
 }
 
 export function getRelatedProducts(

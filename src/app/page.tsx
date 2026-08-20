@@ -7,18 +7,17 @@ import RecargaBidones from "@/components/sections/RecargaBidones";
 import AguaAlcalina from "@/components/sections/AguaAlcalina";
 import ContactHelp from "@/components/sections/ContactHelp";
 import GoogleReviews from "@/components/sections/GoogleReviews";
-import { catalogProducts, specialOfferProducts } from "@/lib/products";
+import { getCatalogProducts } from "@/lib/products";
 
 const HOME_STRIP_LIMIT = 12;
 
-function inStockByCategory(category: "dispensadores" | "accesorios") {
-  return catalogProducts
-    .filter((p) => p.inStock !== false && p.category === category)
-    .slice(0, HOME_STRIP_LIMIT);
-}
-
-export default function Home() {
-  const offers = specialOfferProducts.slice(0, HOME_STRIP_LIMIT);
+export default async function Home() {
+  const catalogProducts = await getCatalogProducts();
+  const inStockByCategory = (category: "dispensadores" | "accesorios") =>
+    catalogProducts
+      .filter((p) => p.inStock !== false && p.category === category)
+      .slice(0, HOME_STRIP_LIMIT);
+  const offers = catalogProducts.filter((p) => p.featured).slice(0, HOME_STRIP_LIMIT);
   const catalogPreview = catalogProducts
     .filter((p) => p.inStock !== false)
     .slice(0, HOME_STRIP_LIMIT);

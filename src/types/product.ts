@@ -8,7 +8,8 @@ export type ProductTag = {
     | "metal"
     | "bottles"
     | "map"
-    | "truck";
+    | "truck"
+    | "design";
 };
 
 export type ProductCategory =

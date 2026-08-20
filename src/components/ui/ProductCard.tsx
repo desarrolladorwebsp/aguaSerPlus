@@ -12,6 +12,7 @@ import {
   Layers,
   MapPin,
   Minus,
+  Palette,
   Plus,
   ShoppingBag,
   Snowflake,
@@ -43,6 +44,7 @@ const tagIcons = {
   bottles: Layers,
   map: MapPin,
   truck: Truck,
+  design: Palette,
 } as const;
 
 type ProductCardProps = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import Container from "@/components/ui/Container";
-import { catalogProducts } from "@/lib/products";
+import type { ProductOffer } from "@/types/product";
+import { getCategoryLabel } from "@/lib/products";
 import {
   PRODUCT_CATEGORIES,
   formatClp,
@@ -49,23 +50,49 @@ export default function ProductsCatalog() {
   const reduce = useReducedMotion();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState("");
+  const [products, setProducts] = useState<ProductOffer[]>([]);
   const [category, setCategory] = useState<ProductCategory | "all">(() =>
     parseCategoryParam(searchParams.get("categoria")),
   );
   const [onlyOffers, setOnlyOffers] = useState(false);
   const [onlyStock, setOnlyStock] = useState(true);
-  const [maxPrice, setMaxPrice] = useState(() => {
-    const prices = catalogProducts
-      .map((p) => p.priceNow)
-      .filter((p) => p > 0);
-    return prices.length > 0 ? Math.max(...prices) : 0;
-  });
+  const [maxPrice, setMaxPrice] = useState(0);
   const [sort, setSort] = useState<SortOption>("relevance");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    void fetch("/api/products")
+      .then((res) => res.json())
+      .then((json) => {
+        const list = Array.isArray(json?.data) ? json.data : [];
+        const mapped = list.map((product: { id: string; title: string; description?: string; priceNormal: number; priceSale: number; stock: number; categoryId: string; images?: string[]; status: string; }) => ({
+          id: product.id,
+          name: product.title,
+          description: product.description,
+          priceBefore: product.priceNormal,
+          priceNow: product.priceSale > 0 && product.priceSale < product.priceNormal ? product.priceSale : product.priceNormal,
+          badge: product.status === "inactive" ? "Sin stock" : product.stock > 0 ? "Disponible" : "Sin stock",
+          badgeTone: product.stock > 0 ? "blue" : "yellow",
+          image: product.images?.[0] ?? "/products/hero-jug-splash.png",
+          images: product.images ?? [],
+          tint: "blue",
+          category: product.categoryId as ProductCategory,
+          inStock: product.status !== "inactive" && product.stock > 0,
+          tags: [],
+        })) as ProductOffer[];
+        setProducts(mapped);
+        const prices = mapped.map((p) => p.priceNow).filter((p) => p > 0);
+        setMaxPrice(prices.length > 0 ? Math.max(...prices) : 0);
+      })
+      .catch(() => {
+        setProducts([]);
+        setMaxPrice(0);
+      });
+  }, []);
+
   const priceBounds = useMemo(() => {
-    const prices = catalogProducts
+    const prices = products
       .map((p) => p.priceNow)
       .filter((p) => p > 0);
     if (prices.length === 0) return { min: 0, max: 0 };
@@ -73,12 +100,12 @@ export default function ProductsCatalog() {
       min: Math.min(...prices),
       max: Math.max(...prices),
     };
-  }, []);
+  }, [products]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    let list = catalogProducts.filter((product) => {
+    let list = products.filter((product) => {
       const matchesQuery =
         !q ||
         product.name.toLowerCase().includes(q) ||
@@ -162,8 +189,8 @@ export default function ProductsCatalog() {
             const active = category === item.id;
             const count =
               item.id === "all"
-                ? catalogProducts.length
-                : catalogProducts.filter((p) => p.category === item.id).length;
+                ? products.length
+                : products.filter((p) => p.category === item.id).length;
 
             return (
               <li key={item.id}>
@@ -488,16 +515,16 @@ export default function ProductsCatalog() {
                   <PackageSearch className="size-7" aria-hidden />
                 </span>
                 <h2 className="mt-4 text-lg font-bold text-foreground">
-                  {catalogProducts.length === 0
+                  {products.length === 0
                     ? "Catálogo en preparación"
                     : "No encontramos productos"}
                 </h2>
                 <p className="mt-2 max-w-sm text-sm text-neutral">
-                  {catalogProducts.length === 0
+                  {products.length === 0
                     ? "Pronto verás aquí las recargas, dispensadores y accesorios Agua Ser Plus."
                     : "Prueba con otra búsqueda o limpia los filtros para ver todo el catálogo."}
                 </p>
-                {catalogProducts.length > 0 ? (
+                {products.length > 0 ? (
                   <button
                     type="button"
                     onClick={clearFilters}
