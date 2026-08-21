@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import {
-  listOrdersFromDb,
-  seedOrdersIfEmpty,
-} from "@/lib/admin/orders-db";
+import { listOrdersFromDb } from "@/lib/admin/orders-db";
 import { isAdminAuthenticated, unauthorized } from "@/lib/admin/session";
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) return unauthorized();
 
   try {
-    await seedOrdersIfEmpty();
     const orders = await listOrdersFromDb();
     return NextResponse.json({ success: true, data: orders });
   } catch (error) {
