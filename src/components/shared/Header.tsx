@@ -108,6 +108,14 @@ export default function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, [menuOpen]);
 
+  // Cuando el header se esconde, las barras sticky debajo de él
+  // (ver --header-h en globals.css) suben para no dejar un hueco.
+  useEffect(() => {
+    document.documentElement.dataset.headerHidden = String(
+      hidden && !menuOpen,
+    );
+  }, [hidden, menuOpen]);
+
   const isActive = (match: (typeof navLinks)[number]["match"]) => {
     if (match === "productos") {
       return pathname === "/productos" || pathname.startsWith("/productos/");

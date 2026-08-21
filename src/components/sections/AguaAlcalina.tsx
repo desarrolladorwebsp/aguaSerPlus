@@ -166,7 +166,7 @@ export default function AguaAlcalina({
           >
             <div className="rounded-[2rem] bg-gradient-to-b from-brand-accent/20 via-white/5 to-green/15 p-2 ring-1 ring-white/15">
               <div className="relative overflow-hidden rounded-[1.6rem] bg-[#0a2740]">
-                <div className="relative aspect-square">
+                <div className="relative aspect-[4/5]">
                   <div
                     aria-hidden
                     className="absolute inset-0 bg-[radial-gradient(circle_at_50%_35%,_rgb(0_153_221_/_0.35),_transparent_58%)]"
@@ -181,7 +181,7 @@ export default function AguaAlcalina({
                     }}
                   >
                     <Image
-                      src="/products/hero-jug-splash.png"
+                      src="/images/bidon-20l-01.png"
                       alt="Bidón Agua Alcalina Agua Ser Plus"
                       fill
                       sizes="(max-width: 1024px) 100vw, 45vw"

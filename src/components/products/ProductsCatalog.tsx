@@ -301,7 +301,10 @@ export default function ProductsCatalog() {
       />
 
       {/* Sticky search + categories */}
-      <div className="sticky top-16 z-30 border-b border-brand/8 bg-[#f5faff]/95 backdrop-blur-md sm:top-[72px]">
+      <div
+        className="sticky z-30 border-b border-brand/8 bg-[#f5faff]/95 backdrop-blur-md transition-[top] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
+        style={{ top: "var(--header-h)" }}
+      >
         <Container className="relative py-4 lg:py-5">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 10 }}

@@ -238,9 +238,9 @@ export default function RecargaBidones() {
           className="relative w-full min-w-0 lg:flex-1"
         >
           <div className="rounded-[2rem] bg-gradient-to-br from-brand-accent/20 via-white to-green/20 p-2 ring-1 ring-brand/10">
-            <div className="relative aspect-square overflow-hidden rounded-[1.6rem] bg-white">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[1.6rem] bg-white">
               <Image
-                src="/products/hero-jug-splash.png"
+                src="/images/bidon-20l-02.png"
                 alt="Bidón Agua Ser Plus para recarga"
                 fill
                 sizes="(max-width: 1024px) 100vw, 45vw"

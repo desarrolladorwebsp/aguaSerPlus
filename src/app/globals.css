@@ -1,5 +1,19 @@
 /* Tailwind lo aplica el CDN en layout (Turbopack se cuelga con @tailwindcss/postcss). */
 
+/* Altura del header sticky; 0 cuando el header se oculta al hacer scroll,
+   para que las barras sticky que van debajo suban y ocupen su lugar. */
+:root {
+  --header-h: 4rem;
+}
+@media (min-width: 640px) {
+  :root {
+    --header-h: 72px;
+  }
+}
+html[data-header-hidden="true"] {
+  --header-h: 0px;
+}
+
 /* ─── AguaSer — Azul principal + Verde eco + Amarillo energía ─── */
 :root {
   --aguaser-brand: #0056a3;
