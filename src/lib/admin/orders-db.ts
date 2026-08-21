@@ -108,12 +108,25 @@ export async function ensureOrderSchema() {
         CREATE INDEX IF NOT EXISTS orders_external_payment_id_idx
         ON orders (external_payment_id)
       `;
+      await sql`
+        CREATE SEQUENCE IF NOT EXISTS order_number_seq START 10001
+      `;
     })().catch((error) => {
       schemaReady = null;
       throw error;
     });
   }
   await schemaReady;
+}
+
+/** Genera un correlativo legible tipo ORD-10001 (arranca en 10001). */
+export async function getNextOrderId(): Promise<string> {
+  await ensureOrderSchema();
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT nextval('order_number_seq') AS n
+  `) as Array<{ n: number | string }>;
+  return `ORD-${rows[0]?.n ?? 10001}`;
 }
 
 export async function listOrdersFromDb(): Promise<AdminOrder[]> {
@@ -173,6 +186,29 @@ export async function getOrderByExternalPaymentId(
     LIMIT 1
   `) as OrderRow[];
   return rows[0] ? mapRow(rows[0]) : null;
+}
+
+/** Descuenta stock una sola vez, cuando el pedido ya quedó confirmado/pagado. */
+export async function decrementStockForItems(
+  items: Pick<OrderItem, "productId" | "qty">[],
+): Promise<void> {
+  const sql = getSql();
+  for (const item of items) {
+    const productRows = (await sql`
+      SELECT id, stock
+      FROM products
+      WHERE id = ${item.productId}
+      LIMIT 1
+    `) as Array<{ id: string; stock: number }>;
+    const current = productRows[0];
+    if (!current) continue;
+    const nextStock = Math.max(0, Number(current.stock) - item.qty);
+    await sql`
+      UPDATE products
+      SET stock = ${nextStock}, updated_at = NOW()
+      WHERE id = ${item.productId}
+    `;
+  }
 }
 
 export async function createOrderInDb(order: AdminOrder): Promise<AdminOrder> {

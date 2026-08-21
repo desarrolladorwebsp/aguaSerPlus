@@ -294,6 +294,30 @@ function OrderDetail({
         </InfoBlock>
         <InfoBlock title="Pago">
           <p className="capitalize">{order.paymentMethod}</p>
+          {order.paymentProvider ? (
+            <p className="text-neutral">
+              Proveedor:{" "}
+              <span className="font-semibold text-foreground">
+                {order.paymentProvider}
+              </span>
+            </p>
+          ) : null}
+          {order.externalPaymentId ? (
+            <p className="text-neutral">
+              ID Klap:{" "}
+              <span className="font-mono text-xs font-semibold text-foreground">
+                {order.externalPaymentId}
+              </span>
+            </p>
+          ) : null}
+          <p className="text-neutral">
+            Creado: {new Date(order.createdAt).toLocaleString("es-CL")}
+          </p>
+          {order.updatedAt ? (
+            <p className="text-neutral">
+              Actualizado: {new Date(order.updatedAt).toLocaleString("es-CL")}
+            </p>
+          ) : null}
           <p className="text-lg font-extrabold text-brand">
             {formatClp(order.total)}
           </p>

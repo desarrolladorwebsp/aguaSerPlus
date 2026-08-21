@@ -35,7 +35,7 @@ export function buildAdminOrderFromCheckout(input: {
     updatedAt: now,
     customer: {
       name: input.customer.name,
-      email: "",
+      email: input.customer.email,
       phone: input.customer.phone,
     },
     shipping: {

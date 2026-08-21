@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server";
 import {
+  decrementStockForItems,
   getOrderByExternalPaymentId,
   getOrderById,
+  createOrderInDb,
   updateOrderInDb,
 } from "@/lib/admin/orders-db";
+import { buildAdminOrderFromCheckout } from "@/lib/admin/order-from-checkout";
+import {
+  deleteCheckoutDraft,
+  getCheckoutDraftByExternalId,
+  getCheckoutDraftById,
+} from "@/lib/admin/checkout-drafts";
+import { sendOrderConfirmedEmail } from "@/lib/emails/order-emails";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
@@ -28,6 +37,35 @@ export async function GET(_request: Request, context: RouteContext) {
     let order =
       (await getOrderById(orderId)) ??
       (await getOrderByExternalPaymentId(orderId));
+
+    if (!order) {
+      // El cliente volvió a la página de éxito antes de que llegara el
+      // webhook: si hay un borrador pendiente, recién ahora se confirma
+      // el pedido y se descuenta stock.
+      const draft =
+        (await getCheckoutDraftById(orderId)) ??
+        (await getCheckoutDraftByExternalId(orderId));
+      if (draft) {
+        const newOrder = buildAdminOrderFromCheckout({
+          orderId: draft.orderId,
+          amount: draft.amount,
+          items: draft.items,
+          customer: draft.customer,
+          paymentProvider: draft.paymentProvider,
+          externalPaymentId: draft.externalPaymentId,
+          status: "processing",
+        });
+        await createOrderInDb(newOrder);
+        await decrementStockForItems(newOrder.items);
+        await deleteCheckoutDraft(draft.orderId);
+        order = newOrder;
+        try {
+          await sendOrderConfirmedEmail(newOrder);
+        } catch (emailError) {
+          console.error("[orders/:id] confirm email error", emailError);
+        }
+      }
+    }
 
     if (!order) {
       return NextResponse.json(

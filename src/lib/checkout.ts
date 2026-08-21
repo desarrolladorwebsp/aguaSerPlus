@@ -1,5 +1,6 @@
 import { getCatalogProducts } from "@/lib/products";
 import { company } from "@/lib/company";
+import { getNextOrderId } from "@/lib/admin/orders-db";
 import type {
   CartCustomer,
   CheckoutOrderItem,
@@ -52,6 +53,10 @@ export async function validateAndPriceItems(
   return { items, amount };
 }
 
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 export function validateCustomer(
   customer: CartCustomer | undefined,
 ): { customer: CartCustomer } | { error: string } {
@@ -59,11 +64,15 @@ export function validateCustomer(
 
   const name = customer.name?.trim() ?? "";
   const phone = customer.phone?.trim() ?? "";
+  const email = customer.email?.trim().toLowerCase() ?? "";
   const fulfillment = customer.fulfillment as FulfillmentMethod | undefined;
   const notes = customer.notes?.trim() || undefined;
 
   if (name.length < 2) return { error: "Ingresa tu nombre." };
   if (phone.length < 8) return { error: "Ingresa un teléfono válido." };
+  if (!email || !isValidEmail(email)) {
+    return { error: "Ingresa un email válido." };
+  }
   if (fulfillment !== "delivery" && fulfillment !== "pickup") {
     return { error: "Elige envío a domicilio o retiro en sucursal." };
   }
@@ -78,7 +87,7 @@ export function validateCustomer(
       return { error: "Ingresa la comuna de envío." };
     }
     return {
-      customer: { name, phone, fulfillment, address, commune, notes },
+      customer: { name, phone, email, fulfillment, address, commune, notes },
     };
   }
 
@@ -87,6 +96,7 @@ export function validateCustomer(
     customer: {
       name,
       phone,
+      email,
       fulfillment: "pickup",
       address: company.address.full,
       commune: company.address.commune,
@@ -95,8 +105,6 @@ export function validateCustomer(
   };
 }
 
-export function createOrderId(): string {
-  const stamp = Date.now().toString(36);
-  const rand = Math.random().toString(36).slice(2, 8);
-  return `ord_${stamp}_${rand}`;
+export async function createOrderId(): Promise<string> {
+  return getNextOrderId();
 }

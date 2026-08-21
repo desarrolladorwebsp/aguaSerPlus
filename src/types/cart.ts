@@ -12,6 +12,7 @@ export type CartItem = {
 export type CartCustomer = {
   name: string;
   phone: string;
+  email: string;
   /** delivery = envío a domicilio · pickup = retiro en sucursal */
   fulfillment: FulfillmentMethod;
   /** Requerido solo si fulfillment === "delivery" */

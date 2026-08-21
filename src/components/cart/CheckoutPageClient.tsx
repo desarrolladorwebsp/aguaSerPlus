@@ -22,7 +22,7 @@ import type { FulfillmentMethod } from "@/types/cart";
 import { FULFILLMENT_LABELS } from "@/types/cart";
 
 type FieldErrors = Partial<
-  Record<"name" | "phone" | "address" | "commune" | "fulfillment" | "form", string>
+  Record<"name" | "phone" | "email" | "address" | "commune" | "fulfillment" | "form", string>
 >;
 
 export default function CheckoutPageClient() {
@@ -30,6 +30,7 @@ export default function CheckoutPageClient() {
   const { items, subtotal, totalItems, hydrated } = useCart();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [fulfillment, setFulfillment] =
     useState<FulfillmentMethod>("delivery");
   const [address, setAddress] = useState("");
@@ -62,6 +63,7 @@ export default function CheckoutPageClient() {
           customer: {
             name,
             phone,
+            email,
             fulfillment,
             address: fulfillment === "delivery" ? address : company.address.full,
             commune:
@@ -248,6 +250,24 @@ export default function CheckoutPageClient() {
                   placeholder="+56 9 1234 5678"
                   autoComplete="tel"
                 />
+              </label>
+
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-semibold text-foreground">
+                  Correo electrónico
+                </span>
+                <input
+                  required
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-brand/15 bg-surface/40 px-4 text-sm outline-none transition focus:border-brand/30 focus:ring-2 focus:ring-brand/15"
+                  placeholder="tucorreo@ejemplo.com"
+                  autoComplete="email"
+                />
+                <span className="mt-1.5 block text-xs text-neutral">
+                  Te enviaremos la confirmación de tu compra a este correo.
+                </span>
               </label>
 
               {fulfillment === "delivery" ? (
