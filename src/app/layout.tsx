@@ -1,11 +1,47 @@
 import type { Metadata } from "next";
 import Providers from "@/components/shared/Providers";
+import { company } from "@/lib/company";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Agua Ser Plus | Agua pura a domicilio",
+  metadataBase: new URL(company.websiteUrl),
+  title: {
+    default: "Agua Ser Plus | Agua pura a domicilio",
+    template: "%s | Agua Ser Plus",
+  },
   description:
     "Agua purificada, dispensadores y Club AguaSer con despacho a domicilio en Santiago. La Farfana 1562, Maipú.",
+  applicationName: company.tradeName,
+  keywords: [
+    "agua purificada a domicilio",
+    "bidones de agua",
+    "dispensadores de agua",
+    "agua alcalina",
+    "Maipú",
+    "Santiago",
+  ],
+  authors: [{ name: company.tradeName, url: company.websiteUrl }],
+  creator: company.tradeName,
+  publisher: company.tradeName,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CL",
+    url: "/",
+    siteName: company.tradeName,
+    title: "Agua Ser Plus | Agua pura a domicilio",
+    description:
+      "Agua purificada, dispensadores y despacho a domicilio en Santiago.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Agua Ser Plus | Agua pura a domicilio",
+    description:
+      "Agua purificada, dispensadores y despacho a domicilio en Santiago.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
