@@ -1,4 +1,10 @@
 import { ImageResponse } from "next/og";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+
+const logoData = `data:image/png;base64,${(
+  await readFile(join(process.cwd(), "public/images/LOGO_AGUA SER PLUS_.png"))
+).toString("base64")}`;
 
 export const alt =
   "Agua Ser Plus: agua purificada, dispensadores y despacho a domicilio";
@@ -47,6 +53,21 @@ export default function OpenGraphImage() {
             width: 510,
           }}
         />
+        <img
+          alt="Agua Ser Plus"
+          height="480"
+          src={logoData}
+          style={{
+            display: "flex",
+            height: 480,
+            objectFit: "contain",
+            position: "absolute",
+            right: 24,
+            top: 76,
+            width: 480,
+          }}
+          width="480"
+        />
         <div
           style={{
             display: "flex",
@@ -59,33 +80,16 @@ export default function OpenGraphImage() {
           <div style={{ alignItems: "center", display: "flex" }}>
             <div
               style={{
-                alignItems: "center",
-                background: "white",
-                borderRadius: 20,
-                color: "#0056a3",
-                display: "flex",
-                fontSize: 42,
-                fontWeight: 800,
-                height: 78,
-                justifyContent: "center",
-                width: 78,
-              }}
-            >
-              A
-            </div>
-            <div
-              style={{
                 display: "flex",
                 fontSize: 37,
                 fontWeight: 700,
-                marginLeft: 22,
               }}
             >
               AGUA SER PLUS
             </div>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", maxWidth: 800 }}>
+          <div style={{ display: "flex", flexDirection: "column", maxWidth: 620 }}>
             <div style={{ display: "flex", fontSize: 76, fontWeight: 800, lineHeight: 1.05 }}>
               Agua pura para tu hogar y oficina
             </div>
