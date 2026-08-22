@@ -14,6 +14,7 @@ import {
 } from "@/lib/admin/checkout-drafts";
 import {
   sendOrderConfirmedEmail,
+  sendOrderReceivedNotificationEmail,
   sendOrderRejectedEmail,
 } from "@/lib/emails/order-emails";
 
@@ -80,6 +81,7 @@ export async function POST(request: Request) {
           await deleteCheckoutDraft(draft.orderId);
           try {
             await sendOrderConfirmedEmail(newOrder);
+            await sendOrderReceivedNotificationEmail(newOrder);
           } catch (emailError) {
             console.error("[klap webhook] confirm email error", emailError);
           }
